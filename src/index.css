@@ -1,13 +1,57 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700;800&display=swap");
+
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  font-family: "Poppins", sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  height: 100vh;
+  background-image: url(./assets/Sprinkle.svg);
+}
+
+.slab {
+  font-family: "Roboto Slab";
+}
+
+.chatlist_search::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.chatlist_search {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.bgc-blue-tale {
+  background-color: #29263b;
+}
+
+.bg-blue-dark {
+  background-color: #1e1c2e;
+}
+
+.border-light-blue {
+  border-color: #4c4a5e;
+}
+
+.card {
+  min-height: 300px;
+  max-width: 400px;
+}
+
+.blob {
+  /* background-image: url(./assets/blob.svg); */
+  height: 300px;
+  fill: #182a63;
+  /* width: 500px;  */
 }
