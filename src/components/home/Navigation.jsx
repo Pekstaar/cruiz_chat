@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { Context } from "../../Store";
 
 export const Navigation = () => {
   const styles = {
@@ -9,8 +10,21 @@ export const Navigation = () => {
     li: "text-gray-600 uppercase text-base hover:text-green-600 hover:border-green-600 border-b-2",
   };
 
+  const { current, setCurrent } = useContext(Context);
+
+  const queryClassName = (page) => {
+    if (current === page) {
+      return "text-green-600 uppercase text-base border-b-2 border-green-500";
+    } else {
+      return styles.li;
+    }
+  };
+
   return (
-    <nav className="mb-2 sticky top-0" style={{ backgroundColor: "#E5E7EBdd" }}>
+    <nav
+      className="mb-2 sticky top-0 z-50"
+      style={{ backgroundColor: "#E5E7EBdd" }}
+    >
       {/* logo */}
       <div className={styles.navFrame}>
         <div className="logo flex items-center gap-2 ">
@@ -31,22 +45,42 @@ export const Navigation = () => {
         </div>
         {/* navlist */}
         <ul className="list flex flex-grow justify-end mx-8 gap-6">
-          <Link
-            className="text-green-600 uppercase text-base border-b-2 border-green-500"
-            as="li"
+          <a
+            className={queryClassName("home")}
+            href="/#home"
+            onClick={() => setCurrent("home")}
           >
             Home
-          </Link>
-          <Link className={styles.li} as="li">
+          </a>
+          <Link
+            className={queryClassName("chat")}
+            as="li"
+            to="/chat"
+            onClick={() => setCurrent("chat")}
+          >
             Chat
           </Link>
-          <a className={styles.li} href="#about">
+          <a
+            className={queryClassName("about")}
+            href="/#about"
+            onClick={() => setCurrent("about")}
+          >
             about
           </a>
-          <Link className={styles.li} as="li">
+          <Link
+            className={queryClassName("terms")}
+            to="/terms"
+            as="li"
+            onClick={() => setCurrent("terms")}
+          >
             Terms
           </Link>
-          <Link className={styles.li} as="li">
+          <Link
+            className={queryClassName("blog")}
+            to="/blog"
+            as="li"
+            onClick={() => setCurrent("blog")}
+          >
             Blog
           </Link>
         </ul>

@@ -7,12 +7,12 @@
   >
     <defs>
       <clipPath id="shape">
-        <path fill="currentColor" d="M625,716.5Q250,933,250,500Q250,67,625,283.5Q1000,500,625,716.5Z"></path>
+        <path fillRule="currentColor" d="M625,716.5Q250,933,250,500Q250,67,625,283.5Q1000,500,625,716.5Z"></path>
       </clipPath>
     </defs>
   
     <g  clip-path="url(#shape)">
-      <path fill="#F59F23" d="M625,716.5Q250,933,250,500Q250,67,625,283.5Q1000,500,625,716.5Z" />
+      <path fillRule="#F59F23" d="M625,716.5Q250,933,250,500Q250,67,625,283.5Q1000,500,625,716.5Z" />
     </g>
 
     

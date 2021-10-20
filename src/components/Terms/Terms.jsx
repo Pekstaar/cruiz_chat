@@ -1,5 +1,5 @@
 import React from "react";
 
-export const TermsScreen = () => {
+export const Terms = () => {
   return <div>Terms</div>;
 };

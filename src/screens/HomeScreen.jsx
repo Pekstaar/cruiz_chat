@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  About,
-  Cards,
-  Carousel,
-  Footer,
-  Navigation,
-  Testimonials,
-} from "../components/home";
+import { About, Cards, Carousel, Testimonials } from "../components/home";
 
 export const HomeScreen = () => {
   const styles = {
@@ -40,8 +33,7 @@ export const HomeScreen = () => {
   );
 
   return (
-    <main className={styles.main}>
-      <Navigation />
+    <div id="home" className={styles.main}>
       <Carousel />
       <div className="container  mx-auto bg-white p-5">
         <Cards />
@@ -49,7 +41,6 @@ export const HomeScreen = () => {
         <Testimonials />
       </div>
       {btn}
-      <Footer />
-    </main>
+    </div>
   );
 };
