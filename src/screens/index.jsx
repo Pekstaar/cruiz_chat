@@ -1,3 +1,4 @@
 export * from "./HomeScreen";
 export * from "./TermsScreen";
-export * from "./ChatsScreen";
+export * from "./chatScreens/main";
+export * from "./BlogScreen";

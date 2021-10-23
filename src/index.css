@@ -14,8 +14,11 @@
 }
 
 body {
-  height: 100vh;
-  background-image: url(./assets/Sprinkle.svg);
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #d1d5dbdc, #d1d5dbd0),
+    url(./assets/Sprinkle.svg);
+  /* background-attachment: fixed; */
+  background-size: contain;
 }
 
 .slab {
@@ -54,4 +57,21 @@ body {
   height: 300px;
   fill: #182a63;
   /* width: 500px;  */
+}
+.userlist::-webkit-scrollbar,
+.chats::-webkit-scrollbar {
+  width: 5px;
+  scrollbar-color: dark;
+}
+/* Track */
+.userlist::-webkit-scrollbar-track,
+.chats::-webkit-scrollbar-track {
+  background: #eeeeee;
+}
+
+/* Handle */
+
+.userlist::-webkit-scrollbar-thumb,
+.chats::-webkit-scrollbar-thumb {
+  background: #bbbbbb;
 }

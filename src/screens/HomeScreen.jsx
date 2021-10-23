@@ -1,5 +1,7 @@
 import React from "react";
 import { About, Cards, Carousel, Testimonials } from "../components/home";
+import { Footer, Navigation } from "../components/home";
+import { NavContext } from "../Store";
 
 export const HomeScreen = () => {
   const styles = {
@@ -34,6 +36,9 @@ export const HomeScreen = () => {
 
   return (
     <div id="home" className={styles.main}>
+      <NavContext>
+        <Navigation />
+      </NavContext>
       <Carousel />
       <div className="container  mx-auto bg-white p-5">
         <Cards />
@@ -41,6 +46,7 @@ export const HomeScreen = () => {
         <Testimonials />
       </div>
       {btn}
+      <Footer />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Context } from "../../Store";
+import { Context } from "../../Store/context";
 
 export const Navigation = () => {
   const styles = {

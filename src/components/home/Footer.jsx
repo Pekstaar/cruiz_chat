@@ -9,7 +9,14 @@ import {
 
 export const Footer = () => {
   return (
-    <div style={{ backgroundColor: "#08112D", marginTop: ".5em" }}>
+    <div
+      style={{
+        backgroundColor: "#08112D",
+        marginTop: ".5em",
+        position: "absolute",
+        width: "100%",
+      }}
+    >
       <div className="p-6  text-gray-300 w-full flex space-between justify-around items-center">
         {/* footer logo */}
         <div className="lgo">
@@ -47,7 +54,7 @@ export const Footer = () => {
         </ul>
 
         {/* contacts */}
-        <div className="contacts flex flex-col gap-2">
+        <div className="contacts flex flex-col gap-3">
           <h2 className="underline text-center capitalize slab text-xl">
             Contacts
           </h2>
