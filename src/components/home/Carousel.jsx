@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 export const Carousel = () => {
   return (
     <div
-      className="container mx-auto md:flex block items-center text-white"
+      className="mx-auto md:flex block items-center text-white"
       style={{
-        height: "550px",
+        height: "650px",
         backgroundImage:
           "linear-gradient(to bottom right, #14255Af0, #14255Ab0), url('https://static.nc-img.com/pp/cms/support-live-chat/images/live-chat-meta-facebook-share.e0459813fc736e905bd82c110453b1fb.png') ",
       }}

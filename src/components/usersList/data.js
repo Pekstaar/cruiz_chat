@@ -1,6 +1,6 @@
 import shortid from "shortid";
 
-export const conversations = [
+export let conversations = [
   //   {
   //     username: "",
   //     imageUrl: "",

@@ -33,7 +33,7 @@ export const Testimonials = () => {
   );
 
   return (
-    <div className="flex">
+    <div className="flex md:flex-row flex-col items-center">
       <div className="" style={{ padding: "50px" }}>
         {svg}
         <h2 className="text-center text-xl uppercase text-indigo-800 font-medium">
@@ -49,7 +49,7 @@ export const Testimonials = () => {
           TESTIMONIALS
         </h2>
 
-        <p className="text-xl my-3 tracking-wide text-gray-500 font-bold">
+        <p className="text-xl my-3 tracking-wide  text-gray-500 font-bold">
           Response by Satisfied Clients
         </p>
 
@@ -60,7 +60,7 @@ export const Testimonials = () => {
           >
             "
           </span>{" "}
-          <p className="text-center">
+          <p className="text-center py-3">
             While most brands and websites offer a <br /> ‘customer
             testimonials’ page (perhaps with some variation on the title),{" "}
             <br />

@@ -9,7 +9,7 @@ export const Cards = () => {
       >
         Features
       </p>
-      <div className=" flex justify-evenly">
+      <div className=" flex md:flex-row items-center flex-col justify-evenly">
         <Div
           title={"Share Media"}
           imgUrl="https://chatdrop.org/wp-content/uploads/sites/3/2017/03/share-media-chat-rooms.jpg"
@@ -30,7 +30,7 @@ export const Cards = () => {
 };
 
 const Div = (props) => (
-  <div className="card p-4  text-center flex flex-col gap-4 shadow-lg">
+  <div className="card p-4 text-center flex flex-col gap-4 shadow-lg">
     <img src={props.imgUrl} alt="" width="90%" className="m-auto my-3 " />
     <span className="text-xl slab text-gray-500 ">{props.title}</span>
     <span>

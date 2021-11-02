@@ -9,8 +9,8 @@ export const About = () => {
       >
         About
       </h2>
-      <div className="flex">
-        <div className="left w-1/2 p-5">
+      <div className="flex md:flex-row flex-col items-center">
+        <div className="left lg:w-1/2 w-full p-5">
           <h2 className="text-xl underline text-yellow-500 uppercase mb-4">
             share projects
           </h2>
@@ -29,7 +29,7 @@ export const About = () => {
           incidunt at aperiam delectus animi consequatur deleniti cum. Pariatur
           fugiat facere dolorum iste doloribus.
         </div>
-        <div className="right w-1/2">
+        <div className="right lg:w-1/2 w-full">
           <img
             src="https://blog.asana.com/wp-content/post-images/02-share-article-1024x679.png"
             height="100%"
@@ -37,15 +37,15 @@ export const About = () => {
           />
         </div>
       </div>
-      <div className="flex ">
-        <div className="right w-1/2 ">
+      <div className="flex lg:flex-row flex-col lg:my-0 my-4">
+        <div className="right w-full lg:w-1/2 ">
           <img
             src="https://hygger.io/wp-content/uploads/2018/10/ZVDhcGZ9ex5FMt2UdfaashQbdOg6vaxK3752wheK.png"
             height="100%"
             alt=""
           />
         </div>
-        <div className="left w-1/2 p-5 flex flex-col justify-center">
+        <div className="left lg:w-1/2 w-full p-5 flex flex-col justify-center">
           <h2 className="text-xl underline text-green-600 uppercase mb-4">
             Schedule Events
           </h2>

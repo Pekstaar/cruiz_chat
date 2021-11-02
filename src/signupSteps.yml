@@ -1,0 +1,18 @@
+-> Sign in with google steps:
+  -> import from firebase/auth
+  -> setup sign in with google with screen popup
+  -> on signin first check if user exists in database.
+    > if does not exist, add to database with the respective keys
+      > id => string
+      > username => string
+      > email => string
+      > imageUrl => string
+      > status => boolean
+      > dateJoined => time
+      > friends => Array
+
+    > if exists, just login.
+  
+
+  
+

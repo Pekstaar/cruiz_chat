@@ -17,7 +17,7 @@ export const Footer = () => {
         width: "100%",
       }}
     >
-      <div className="p-6  text-gray-300 w-full flex space-between justify-around items-center">
+      <div className="p-6  text-gray-300 w-full flex md:flex-row md:gap-auto gap-5 flex-col space-between justify-around items-center">
         {/* footer logo */}
         <div className="lgo">
           <div className="logo flex items-center gap-2 ">

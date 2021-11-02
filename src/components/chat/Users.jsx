@@ -1,21 +1,51 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { MdOutlineSearch, MdOutlineAdd } from "react-icons/md";
 import { HiDotsVertical } from "react-icons/hi";
 import { Context } from "../../Store/context";
+import DialogModal from "../DialogModal";
 
 export const Users = () => {
-  const { conversations, currentChat, updateCurrent } = useContext(Context);
+  const {
+    conversations,
+    currentChat,
+    updateCurrent,
+    userOnFocus,
+    setUserOnFocus,
+  } = useContext(Context);
+  const [displayModal, setDisplayModal] = useState(false);
 
-  const [users] = useState(conversations);
+  const [users, setUsers] = useState(conversations);
 
-  useEffect(() => {
-    console.log("Conversations:", users);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    setUsers(conversations);
   }, [conversations]);
+  // const [toSearch, setToSearch] = useState("");/
+
+  // useMemo(() => {
+  const filterUsers = (searchValue, userArray) => {
+    let filteredData = [];
+    if (searchValue === "") {
+      setUsers(conversations);
+      return;
+    }
+
+    userArray.forEach((user) => {
+      const value = searchValue.toLowerCase();
+      const name = user.name.toLowerCase();
+
+      if (name.includes(value)) {
+        filteredData.push(user);
+        return;
+      }
+    });
+
+    setUsers(filteredData);
+  };
+
   return (
     <div className="users w-80 h-full p-1 pb-5 flex-shrink-0">
       {/* Navigation */}
-      <div className="nav w-full text-gray-600 h-14 border-gray-200 flex items-center justify-center border-b-2 p-">
+      <div className="nav w-full text-gray-600 h-14 border-gray-200 flex items-center justify-center border-b-2 ">
         <span className="slab text-xl uppercase font-medium">Chats</span>
       </div>
 
@@ -61,7 +91,9 @@ export const Users = () => {
         <input
           type="text"
           placeholder="search"
-          className="w-full bg-indigo-50 p-2 px-2.5 outline-none text-gray-500 rounded-3xl"
+          className="w-full bg-indigo-50 text-sm p-2 px-2.5 outline-none text-gray-500 rounded-3xl"
+          // value={toSearch}
+          onChange={(e) => filterUsers(e.target.value, conversations)}
         />
 
         {/* absolute search icon */}
@@ -72,11 +104,16 @@ export const Users = () => {
       {/* body header */}
       <div className="b_header w-full flex items-center mt-2 px-1 gap-2">
         {/* latest chats title */}
-        <span className="flex-grow text-gray-500 text-sm">latest chats</span>
+        <span className="flex-grow text-gray-500 text-sm underline">
+          latest chats
+        </span>
 
+        <div className={`${!displayModal && "hidden"}`}>
+          <DialogModal setDisplay={setDisplayModal} />
+        </div>
         {/* add new button */}
         <button
-          onClick={() => console.log("Add new Clicked")}
+          onClick={() => setDisplayModal(true)}
           className="add_btn p-1.5 bg-green-200 hover:bg-green-100 rounded-full text-green-800 cursor-pointer"
         >
           <MdOutlineAdd className="text-2xl " />
@@ -94,11 +131,13 @@ export const Users = () => {
         {users &&
           users.map((user) => (
             <div
-              className="user m-1 p-2 rounded-xl hover:bg-gray-100 flex gap-2 cursor-pointer"
+              className={`user m-1 p-2 hover:bg-gray-100 flex gap-2 cursor-pointer ${
+                userOnFocus === user.id ? "bg-indigo-50" : ""
+              }`}
               key={user.id}
               onClick={() => {
                 updateCurrent(user);
-                console.log(user);
+                setUserOnFocus(user.id);
               }}
             >
               {/* image */}

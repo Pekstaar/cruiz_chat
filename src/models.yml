@@ -1,0 +1,19 @@
+->USER Model:
+  -> id => string
+  -> username => string
+  -> email => string
+  -> imageUrl => string
+  -> status => boolean
+  -> dateJoined => time
+  -> friends => Array
+
+-> CHAT MODEL:
+  -> id => string
+  -> type => string
+  -> users => Array[]
+  -> lastMessages => {
+    senderId => string
+    messages => Array[]
+    timeSent => time
+    message => 
+  }

@@ -59,19 +59,59 @@ body {
   /* width: 500px;  */
 }
 .userlist::-webkit-scrollbar,
-.chats::-webkit-scrollbar {
+.chats::-webkit-scrollbar,
+.mediaList::-webkit-scrollbar {
   width: 5px;
   scrollbar-color: dark;
 }
 /* Track */
 .userlist::-webkit-scrollbar-track,
-.chats::-webkit-scrollbar-track {
+.chats::-webkit-scrollbar-track,
+.mediaList::-webkit-scrollbar-track {
   background: #eeeeee;
 }
 
 /* Handle */
 
 .userlist::-webkit-scrollbar-thumb,
-.chats::-webkit-scrollbar-thumb {
+.chats::-webkit-scrollbar-thumb,
+.mediaList::-webkit-scrollbar-thumb {
   background: #bbbbbb;
+}
+
+.emoji-mart-title-label {
+  font-size: 18px !important ;
+  font-family: "Poppins";
+}
+.emoji-mart-preview {
+  height: 50px !important;
+  display: none;
+}
+
+.z-500 {
+  z-index: 500;
+}
+
+.flex_b_50 {
+  flex-basis: 50%;
+}
+.flex_b_60 {
+  flex-basis: 60%;
+}
+.flex_b_70 {
+  flex-basis: 70%;
+}
+.flex_b_40 {
+  flex-basis: 40%;
+}
+.flex_b_30 {
+  flex-basis: 30%;
+}
+
+.border-1 {
+  border-width: 2px;
+}
+
+button {
+  outline: none;
 }
