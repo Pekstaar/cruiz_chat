@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaHome, FaVideo, FaList } from "react-icons/fa";
 import { MdGroup, MdSettingsSuggest } from "react-icons/md";
 import { IoLogoWechat } from "react-icons/io5";
+import Popper from "../Popper";
 
 export const SideNav = () => {
   const [current, setCurrent] = useState("friendschat");
@@ -86,20 +87,21 @@ export const SideNav = () => {
             <MdSettingsSuggest className={`text-2xl`} />
           </Link>
         </div>
-
-        {/* profile image */}
-        <div
-          className="profileImage p-1"
-          style={{ width: "60px", height: "60px" }}
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Alberto_conversi_profile_pic.jpg"
-            alt=""
-            height="100%"
-            width="100%"
-            className="rounded-full "
-          />
-        </div>
+        <Popper>
+          {/* profile image */}
+          <div
+            className="profileImage p-1"
+            style={{ width: "60px", height: "60px" }}
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Alberto_conversi_profile_pic.jpg"
+              alt=""
+              height="100%"
+              width="100%"
+              className="rounded-full "
+            />
+          </div>
+        </Popper>
       </div>
     </div>
   );

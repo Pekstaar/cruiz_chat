@@ -44,7 +44,7 @@ export const Navigation = () => {
           </span>
         </div>
         {/* navlist */}
-        <div className="flex flex-col items-start md:flex-row gap-4">
+        <div className="flex flex-col items-center md:flex-row gap-4">
           <ul className="list sm:flex grid flex-grow justify-end mx-8 gap-6">
             <a
               className={queryClassName("home")}

@@ -7,25 +7,15 @@ export const MainContext = ({ children }) => {
   const auth = getAuth();
 
   // states
-  // signedInUser
-  const [signedInUser, setSignedInUser] = useState();
+  // signedInUser{
 
-  React.useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setSignedInUser(user);
-      } else {
-        setSignedInUser(null);
-      }
-    });
-  }, [auth]);
+
 
   return (
     <Context.Provider
       value={{
         // signedInUser
-        signedInUser,
-        setSignedInUser,
+
       }}
     >
       {children}

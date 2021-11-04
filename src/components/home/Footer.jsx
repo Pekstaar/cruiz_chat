@@ -6,6 +6,7 @@ import {
   AiFillTwitterCircle,
   AiFillLinkedin,
 } from "react-icons/ai";
+import Popper from "../Popper";
 
 export const Footer = () => {
   return (
@@ -35,6 +36,7 @@ export const Footer = () => {
             <span className="slab text-xl text-gray-100 uppercase">
               Cruizchat
             </span>
+            <Popper />
           </div>
 
           <img

@@ -48,7 +48,7 @@ export const Media = () => {
         {/* list of items */}
         <div
           className="mediaList overflow-y-scroll flex flex-col"
-          style={{ height: "375px" }}
+          style={{ maxHeight: "375px" }}
         >
           {/* first */}
           <ListedItem

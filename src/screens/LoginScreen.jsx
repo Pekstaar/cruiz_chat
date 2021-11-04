@@ -6,11 +6,13 @@ import { Context } from "../Store/MainContext";
 export const LoginScreen = (props) => {
   const { signedInUser } = useContext(Context);
 
-  return signedInUser && signedInUser.uid ? (
+  // return signedInUser && signedInUser.uid ? (
+  return (
     <div className="h-screen flex justify-center items-start">
       <Form />
     </div>
-  ) : (
-    <Redirect to="/chat" />
-  );
+  )
+  // ) : (
+  //   <Redirect to="/chat" />
+  // );
 };

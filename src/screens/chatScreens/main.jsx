@@ -12,7 +12,7 @@ export const ChatScreen = () => {
   return (
     <main
       className="bg-white container mx-auto my-4  flex "
-      style={{ height: "96vh" }}
+      style={{ minHeight: "96vh" }}
     >
       {/* side Icons Nav */}
       <SideNav />

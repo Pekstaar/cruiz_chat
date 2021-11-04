@@ -4,6 +4,7 @@ import {
   signInWithPopup,
   getAuth,
   onAuthStateChanged,
+  signOut
 } from "firebase/auth";
 // import { getFirestore } from "firebase/firestore";
 // // import { getAuth } from "firebase/auth";
@@ -29,4 +30,4 @@ const googleAuthProvider = new GoogleAuthProvider();
 // // export { firebase, db, auth, functions, googleProvider }
 
 // // export default app;
-export { googleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged };
+export { googleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged, signOut };
