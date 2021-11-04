@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 
+import { Context } from "../../Store/MainContext";
+
 export const Form = () => {
+  const { signInWithGoogle } = useContext(Context);
+
   return (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
       <h1 className="text-center font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
@@ -10,13 +14,19 @@ export const Form = () => {
       </h1>
       <hr className="" />
 
-      <form action="" className="form py-6 flex items-center flex-col">
-        {/* login with google pop-up button */}
-        <button className="uppercase p-3 bg-indigo-800 hover:bg-indigo-700 text-white  mx-5 w-full md:mx-0 md:w-4/6 rounded flex gap-6 justify-center font-medium items-center">
+      {/* login with google pop-up button */}
+      <div className="pt-6 flex justify-center">
+        <button
+          className="uppercase p-3 bg-indigo-800 hover:bg-indigo-700 text-white  mx-5 w-full md:mx-0 md:w-4/6 rounded flex gap-6 justify-center font-medium items-center"
+          type="button"
+          onClick={() => signInWithGoogle()}
+        >
           login with Google
           <FcGoogle className="text-3xl" />
         </button>
+      </div>
 
+      <form action="" className="form pb-6 flex items-center flex-col">
         {/* or text seperator */}
         <span className="text-center text-gray-500 my-3 ">or</span>
 

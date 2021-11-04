@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Context } from "./context";
+import { Context } from "./MainContext";
 
 export const NavContext = ({ children }) => {
   const [current, setCurrent] = useState("home");

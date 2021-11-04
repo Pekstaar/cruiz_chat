@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { MdOutlineSearch, MdOutlineAdd } from "react-icons/md";
 import { HiDotsVertical } from "react-icons/hi";
-import { Context } from "../../Store/context";
+import { Context } from "../../Store/MainContext";
 import DialogModal from "../DialogModal";
 
 export const Users = () => {

@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import shortid from "shortid";
-import { Context } from "../../Store/context";
+import { Context } from "../../Store/MainContext";
 
 export const Signup = () => {
-  const { handleSignUp } = useContext(Context);
+  const { handleSignUp, signedInUser } = useContext(Context);
 
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [formState, setFormState] = React.useState({
@@ -37,7 +37,7 @@ export const Signup = () => {
     });
   };
 
-  return (
+  return signedInUser && signedInUser.uid ? (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
       <h1 className="text-center font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
         Sign-up
@@ -120,5 +120,7 @@ export const Signup = () => {
         </Link>
       </form>
     </div>
+  ) : (
+    <Redirect to="/chat" />
   );
 };

@@ -1,14 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Context } from "../../Store/context";
+import { Context } from "../../Store/MainContext";
 import ReactScrollableFeed from "react-scrollable-feed";
 import { MdFaceRetouchingNatural } from "react-icons/md";
 import { AiOutlinePaperClip } from "react-icons/ai";
 import { IoIosSend } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import EmojiPicker from "../EmojiPicker";
+import { Redirect } from "react-router";
+import { getAuth, onAuthStateChanged } from "@firebase/auth";
 
 export const Chats = () => {
-  const { currentChat } = useContext(Context);
+  const { currentChat, signedInUser } = useContext(Context);
 
   const messageRef = useRef();
   const [messages, setMessages] = useState(currentChat.messages);
@@ -33,7 +35,16 @@ export const Chats = () => {
   useEffect(() => {
     messageRef.current.focus();
     setMessages(currentChat.messages);
-  }, [currentChat]);
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        console.log(user);
+      }
+    });
+  }, [currentChat, signedInUser]);
 
   return (
     <div className="flex flex-col w-full relative">

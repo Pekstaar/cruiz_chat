@@ -1,4 +1,14 @@
-import * as firebase from "firebase";
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  getAuth,
+  onAuthStateChanged,
+} from "firebase/auth";
+// import { getFirestore } from "firebase/firestore";
+// // import { getAuth } from "firebase/auth";
+// import { initializeApp } from "firebase/app";
+// import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCMOFDT-BSl-20Tenknb2iRKBGrY5I2Pjo",
@@ -9,15 +19,14 @@ const firebaseConfig = {
   appId: "1:431639200611:web:5a26cba385757f0e5bc956",
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+export const firebase = initializeApp(firebaseConfig);
+// const db = getFirestore(app);
+// const auth = getAuth;
 
-//initiating references to the databases
-// const usersRef = db.collection("users");
+const googleAuthProvider = new GoogleAuthProvider();
+// // googleProvider.setCustomParameters({ prompt: "select_account" });
+//   firebase.auth().signInWithPopup(googleProvider);
+// // export { firebase, db, auth, functions, googleProvider }
 
-//google provider sign-in
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-export { firebase, db, auth, googleProvider };
+// // export default app;
+export { googleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged };

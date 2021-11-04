@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Context } from "../../Store/context";
+import { Context } from "../../Store/MainContext";
 import { BsFolderFill } from "react-icons/bs";
 import { HiDotsVertical, HiOutlineLink } from "react-icons/hi";
 import { BiChevronDown } from "react-icons/bi";
