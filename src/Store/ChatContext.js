@@ -6,57 +6,68 @@ import {
   signInWithPopup,
   signOut,
   createUserWithEmailAndPassword,
-  db
+  db,
   // setDoc,
 } from "../FirebaseConfig";
-import { doc, setDoc, onSnapshot, getDocs, collection, query, where, updateDoc, getDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "@firebase/auth";
+import {
+  doc,
+  setDoc,
+  onSnapshot,
+  getDocs,
+  collection,
+  query,
+  where,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from "@firebase/auth";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router";
 import { firebaseTimeStamp } from "../FirebaseConfig";
-
-
 
 // import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 // import { auth } from "../FirebaseConfig";
 
 export const ChatContext = (props) => {
-  const { children } = props
+  const { children } = props;
   const history = useHistory();
   const auth = getAuth();
 
-
-  const [currentUser, setCurrentUser] = useState("")
+  const [currentUser, setCurrentUser] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentChat, setCurrentChat] = useState(conversations[0]);
   const [userOnFocus, setUserOnFocus] = useState(conversations[0].id);
   const [friends, setFriends] = useState([]);
-  const [users, setUsers] = useState([])
-
+  const [users, setUsers] = useState([]);
 
   // logout end
 
-
   //toast function
-  const showToast = (message) => toast.success(message, {
-    position: "top-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-  });
+  const showToast = (message) =>
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
-  const showErrorToast = (message) => toast.error(message, {
-    position: "top-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-  });
+  const showErrorToast = (message) =>
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
   const setState = (state) => {
     setCurrentChat(state);
@@ -67,7 +78,8 @@ export const ChatContext = (props) => {
       .then((res) => {
         showToast("Login Success!");
         history.push("/chat");
-      }).catch(e => console.error(e.message));
+      })
+      .catch((e) => console.error(e.message));
   // signIn with google end
 
   // signup start
@@ -87,22 +99,21 @@ export const ChatContext = (props) => {
         })
           .then(() => {
             showToast("Sign up successful!");
-            setLoading(false)
+            setLoading(false);
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e.message);
-            showErrorToast(e.message)
-            setLoading(false)
+            showErrorToast(e.message);
+            setLoading(false);
           });
 
         // console.log(r)
-
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e.message);
         setLoading(false);
-      })
-  }
+      });
+  };
   // signup end
 
   // login funciton start
@@ -110,13 +121,13 @@ export const ChatContext = (props) => {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         showToast("Login Success!");
-        history.push("/chat")
+        history.push("/chat");
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("login Error!", e.message);
-        showErrorToast("Login error!")
-      })
-  }
+        showErrorToast("Login error!");
+      });
+  };
   // login function end
 
   // chatting friends
@@ -127,47 +138,51 @@ export const ChatContext = (props) => {
   const logOut = () =>
     signOut(auth).then(() => {
       showToast("Logout Success!");
-      history.push("/")
+      history.push("/");
     });
 
   // fetch all users
   const fetchAllUsers = async () => {
-    const data = await getDocs(collection(db, 'users'));
-    let list = []
+    const data = await getDocs(collection(db, "users"));
+    let list = [];
+    let filteredList = friends;
 
-    data.forEach(d => {
-      list.push(d.data().email)
-    })
+    data.forEach((d) => {
+      const user = d.data();
+      if (user.email !== currentUser.email) {
+        list.push(d.data().email);
+      }
+    });
 
-    setUsers(list)
-  }
+    filteredList.forEach((f) => {
+      filteredList = list.filter((e) => e !== f.email);
+    });
+    console.log(filteredList);
+    setUsers(list);
+    // console.log(list);
+  };
   // end of fetch all users function
 
-  // add Friend function    
+  // add Friend function
   const addFriend = async (email) => {
-
     try {
-
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
-
-      querySnapshot.forEach(q => {
-        const currentFriends = currentUser.friends
+      querySnapshot.forEach((q) => {
+        const currentFriends = currentUser.friends;
         // const item = q.data()
         const current = doc(db, "users", currentUser.id);
 
         updateDoc(current, {
-          friends: [...currentFriends, q.id]
+          friends: [...currentFriends, q.id],
         });
 
-        showToast("User Added successfully!")
-
-      })
-
+        showToast("User Added successfully!");
+      });
     } catch (err) {
-      console.error(err.message)
+      console.error(err.message);
     }
 
     // try {
@@ -194,77 +209,49 @@ export const ChatContext = (props) => {
     //   console.error(error.message);
     //   setLoading(false)
     // }
-
-
-  }
-  // end of add friend function
-
-  // chats manager:
-  // chat fields:
-  //  ids: id
-  //  chats{
-  // time sent
-  // message
-  // sentby
-  // 
-  // }
-  //  created at
-  // 
-  // get chats
-  const createChat = () => {
-    // check if chat exists
-    
-    // const await setDoc(doc(db, "cities", "new-city-id"), data)
-
-  }
-
-  const addChat = () => {
-
-  }
+  };
 
   React.useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         onSnapshot(doc(db, "users", user.uid), (d) => {
-          setCurrentUser({ id: user.uid, ...d.data(), status: "online" })
+          setCurrentUser({ id: user.uid, ...d.data(), status: "online" });
           // console.log(d.data().friends)
-
 
           // setFriends(doc.data().friends)
           // console.log("current User", doc.data().friends)
         });
 
         // update status to online.
-
       } else {
-        setCurrentUser(null)
+        setCurrentUser(null);
       }
     });
-
-    fetchAllUsers()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth])
+  }, [auth]);
+
+  React.useEffect(() => {
+    fetchAllUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [friends]);
 
   React.useEffect(() => {
     const getFriends = async () => {
-      let arr = []
-
+      let arr = [];
 
       for (const f of currentUser.friends) {
         const docRef = doc(db, "users", f);
         const docSnap = await getDoc(docRef);
 
-        arr.push({ id: docSnap.id, ...docSnap.data() })
-      };
+        arr.push({ id: docSnap.id, ...docSnap.data() });
+      }
 
-      setFriends(arr)
-    }
+      setFriends(arr);
+    };
 
-    currentUser && currentUser.friends && getFriends()
+    currentUser && currentUser.friends && getFriends();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser])
-
+  }, [currentUser]);
 
   return (
     <Context.Provider
@@ -286,7 +273,7 @@ export const ChatContext = (props) => {
         currentUser,
         allUsers: users,
         addFriend,
-        friends
+        friends,
       }}
     >
       {children}
