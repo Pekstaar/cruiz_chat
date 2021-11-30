@@ -1,18 +1,56 @@
 // import {  } from "@firebase/auth";
 import React, { useContext } from "react";
+import { FaHome } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { Context } from "../../Store/MainContext";
 
 
 export const Form = () => {
-  const { signInWithGoogle } = useContext(Context);
+  const { signInWithGoogle, login } = useContext(Context);
+
+  const [state, setState] = React.useState({
+    email: "",
+    password: ""
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // handle submit
+    login(state.email, state.password);
+    setState({
+      email: "",
+      password: ""
+    })
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+
+    setState({
+      ...state,
+      [name]: value
+    })
+  }
 
   return (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
-      <h1 className="text-center font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
-        Log-in
-      </h1>
+      <div className="flex items-center">
+        {/* home button */}
+        <Link
+          as="div"
+          to="/"
+          className={`h-14 flex items-center w-1/12 justify-end hover:text-green-600 cursor-pointer hover:border-green-600`}
+          style={{ justifySelf: "start" }}
+        >
+          <FaHome className={`text-2xl text-gray-500  hover:text-indigo-800`} />
+        </Link>
+
+        {/* login header */}
+        <h1 className="text-center flex-grow font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
+          Log-in
+        </h1>
+      </div>
       <hr className="" />
 
       {/* login with google pop-up button */}
@@ -27,7 +65,7 @@ export const Form = () => {
         </button>
       </div>
 
-      <form action="" className="form pb-6 flex items-center flex-col">
+      <form onSubmit={handleSubmit} className="form pb-6 flex items-center flex-col">
         {/* or text seperator */}
         <span className="text-center text-gray-500 my-3 ">or</span>
 
@@ -37,7 +75,8 @@ export const Form = () => {
           name="email"
           placeholder="email@email.com "
           className="p-3 my-2 outline-none border-gray-300 text-gray-500 rounded  border-1 mx-5 w-full md:mx-0 md:w-4/6"
-          id=""
+          onChange={handleChange}
+          value={state.email}
         />
 
         {/* password input field */}
@@ -46,7 +85,8 @@ export const Form = () => {
           name="password"
           placeholder="password "
           className="p-3 my-2 outline-none border-gray-300 text-gray-500 rounded  border-1 mx-5 w-full md:mx-0 md:w-4/6"
-          id=""
+          onChange={handleChange}
+          value={state.password}
         />
 
         {/* forgot password link to:/forgotpassword */}

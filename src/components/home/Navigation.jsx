@@ -87,7 +87,7 @@ export const Navigation = () => {
 
             <div className="lg:hidden flex gap-2 text-indigo-700 underline">
               <Link to="/signin">login</Link>
-              <Link to="/signin">signup</Link>
+              <Link to="/signup">signup</Link>
             </div>
           </ul>
           {/* navbuttons */}
@@ -99,7 +99,12 @@ export const Navigation = () => {
             >
               Sign-in
             </Link>
-            <button className={styles.buttonSignUp}>Sign-up</button>
+            <Link
+              to="/signup"
+              as="button"
+              className={styles.buttonSignUp}>
+              Sign-up
+            </Link>
           </div>
         </div>
       </div>

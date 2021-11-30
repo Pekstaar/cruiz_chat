@@ -3,7 +3,7 @@ import { BsArrowLeftCircle, BsArrowRightCircle } from "react-icons/bs";
 
 export const Carousel = () => {
   return (
-    <div className={`bg-white m-auto  w-full flex `}>
+    <div className={`bg-white m-auto flex w-11/12`}>
       <div className="description relative flex flex-col gap-4 flex_b_50 p-3 py-16">
         <span className="top-0 absolute text-gray-500 underline ">
           Recent posts
@@ -36,7 +36,7 @@ export const Carousel = () => {
           <BsArrowRightCircle className="text-5xl text-gray-500 cursor-pointer hover:text-gray-600" />
         </div>
       </div>
-      <div className="hidden">
+      <div className="">
         <div className="image flex_b_50 bg-gray-200 ">
           <img
             src="https://i.ytimg.com/vi/UoCnsh6x2ls/maxresdefault.jpg"

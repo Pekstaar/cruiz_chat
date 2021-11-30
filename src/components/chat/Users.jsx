@@ -6,32 +6,37 @@ import DialogModal from "../DialogModal";
 
 export const Users = () => {
   const {
-    conversations,
-    currentChat,
     updateCurrent,
     userOnFocus,
     setUserOnFocus,
+    currentUser,
+    allUsers,
+    friends
   } = useContext(Context);
-  const [displayModal, setDisplayModal] = useState(false);
 
-  const [users, setUsers] = useState(conversations);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [users, setUsers] = useState(friends);
+
+  const names = currentUser && currentUser.fullName && currentUser.fullName.split(" ");
+
+
 
   React.useEffect(() => {
-    setUsers(conversations);
-  }, [conversations]);
+    setUsers(friends);
+  }, [friends]);
   // const [toSearch, setToSearch] = useState("");/
 
   // useMemo(() => {
   const filterUsers = (searchValue, userArray) => {
     let filteredData = [];
     if (searchValue === "") {
-      setUsers(conversations);
+      setUsers(friends);
       return;
     }
 
     userArray.forEach((user) => {
       const value = searchValue.toLowerCase();
-      const name = user.name.toLowerCase();
+      const name = user.fullName.toLowerCase();
 
       if (name.includes(value)) {
         filteredData.push(user);
@@ -50,31 +55,37 @@ export const Users = () => {
       </div>
 
       {/* friends profile */}
-      <div className="h-44 bg-indigo-50 m-2 flex items-center justify-center flex-col gap-3">
+      <div className="h-44 bg-indigo-50 m-2 flex items-center justify-center flex-col gap-1">
         {/* image div */}
-        <div className="img w-20 h-20 rounded-full border-2 border-gray-300 relative">
+        <div className="img w-20 h-20 flex items-center justify-center bg-green-200 rounded-full border-2 border-white relative">
           {/* image/ */}
-          <img
-            src={currentChat && currentChat.imageUrl}
-            alt=""
-            className="h-full rounded-full w-full object-cover"
-          />
+          {
+            currentUser && currentUser.imageUrl && currentUser.imageUrl !== "" && currentUser.imageUrl !== null ?
+              <img
+                src={currentUser && currentUser.imageUrl}
+                alt=""
+                className="h-full rounded-full w-full object-cover"
+              />
+              :
+              <span className="font-medium slab text-3xl text-green-800">{names && names[0].substring(0, 1)}{names && names[1].substring(0, 1)}</span>
+          }
+
           {/* status dot */}
           <div
             className={
-              currentChat.status === "active"
+              currentUser.status && currentUser.status === "online"
                 ? "dot rounded-full bg-green-500 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0"
                 : `dot rounded-full bg-gray-400 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0`
             }
           ></div>
         </div>
         {/* user name */}
-        <span className="font-medium text-base text-gray-700">
-          {currentChat && currentChat.name}
+        <span className="font-medium text-base slab font-light text-xl text-gray-500 ">
+          {currentUser && currentUser.fullName}
         </span>
 
         {/* status */}
-        {currentChat.status === "active" ? (
+        {currentUser && currentUser.status === "online" ? (
           <div className="status bg-green-300 rounded text-sm text-green-800 p-1">
             online
           </div>
@@ -93,7 +104,7 @@ export const Users = () => {
           placeholder="search"
           className="w-full bg-indigo-50 text-sm p-2 px-2.5 outline-none text-gray-500 rounded-3xl"
           // value={toSearch}
-          onChange={(e) => filterUsers(e.target.value, conversations)}
+          onChange={(e) => filterUsers(e.target.value, friends)}
         />
 
         {/* absolute search icon */}
@@ -109,7 +120,7 @@ export const Users = () => {
         </span>
 
         <div className={`${!displayModal && "hidden"}`}>
-          <DialogModal setDisplay={setDisplayModal} />
+          <DialogModal setDisplay={setDisplayModal} users={allUsers} />
         </div>
         {/* add new button */}
         <button
@@ -131,9 +142,8 @@ export const Users = () => {
         {users &&
           users.map((user) => (
             <div
-              className={`user m-1 p-2 hover:bg-gray-100 flex gap-2 cursor-pointer ${
-                userOnFocus === user.id ? "bg-indigo-50" : ""
-              }`}
+              className={`user m-1 p-2 hover:bg-gray-100 flex gap-2 cursor-pointer ${userOnFocus === user.id ? "bg-indigo-50" : ""
+                }`}
               key={user.id}
               onClick={() => {
                 updateCurrent(user);
@@ -141,13 +151,17 @@ export const Users = () => {
               }}
             >
               {/* image */}
-              <div className="img w-14 h-14 rounded-full border-2 flex-shrink-0 border-gray-300 relative ">
+              <div className="img w-14 h-14 rounded-full border-2 flex-shrink-0 border-gray-300 relative flex items-center justify-center bg-green-200 ">
                 {/* image/ */}
-                <img
-                  src={user.imageUrl}
-                  alt=""
-                  className="h-full w-full rounded-full object-cover"
-                />
+
+                {user && user.imageUrl ?
+                  <img
+                    src={user.imageUrl}
+                    alt=""
+                    className="h-full w-full rounded-full object-cover"
+                  /> :
+                  <span className="font-medium slab text-3xl text-green-800">{user && user.fullName.substring(0, 1)}</span>
+                }
                 {user.status === "active" ? (
                   <div className="absolute bottom-0 right-0 h-2 w-2 p-1.5  bg-green-500 border-white border-2 rounded-full" />
                 ) : (
@@ -157,12 +171,12 @@ export const Users = () => {
 
               {/* details */}
               <div className="details flex-grow justify-center gap-1 font-medium h-14 flex flex-col">
-                <span className="text-sm text-gray-800">{user.name}</span>
-                <span className="text-xs text-gray-400">
+                <span className="text-sm text-gray-800">{user.fullName}</span>
+                {/* <span className="text-xs text-gray-400">
                   {user.latestMessageText.length >= 29
                     ? `${user.latestMessageText.substring(0, 27)}...`
                     : user.latestMessageText}
-                </span>
+                </span> */}
               </div>
 
               {/* last chat time */}

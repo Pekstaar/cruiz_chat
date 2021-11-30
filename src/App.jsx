@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Switch, Route, Redirect, useHistory } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import {
   BlogScreen,
   ChatScreen,
@@ -36,7 +36,7 @@ export default App;
 
 export const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
   const auth = getAuth()
-  const history = useHistory();
+  // const history = useHistory();
 
   // const [currentUser, setCurrentUser] = useState(auth)
   const [signedInUser, setSignedInUser] = useState({ signedIn: false, user: null })
@@ -52,10 +52,10 @@ export const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
     });
   }, [auth])
 
-  React.useEffect(() => {
-    console.log(signedInUser)
-    // signedInUser.signedIn === false && history.push("/signin")
-  }, [history, signedInUser])
+  // React.useEffect(() => {
+  //   console.log(signedInUser)
+  //   // signedInUser.signedIn === false && history.push("/signin")
+  // }, [history, signedInUser])
 
   return (
     <Route

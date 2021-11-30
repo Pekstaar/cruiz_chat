@@ -6,7 +6,6 @@ import { AiOutlinePaperClip } from "react-icons/ai";
 import { IoIosSend } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import EmojiPicker from "../EmojiPicker";
-import { Redirect } from "react-router";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 
 export const Chats = () => {

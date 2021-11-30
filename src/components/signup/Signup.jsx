@@ -1,22 +1,19 @@
 import React, { useContext } from "react";
-import { Link, Redirect } from "react-router-dom";
-import shortid from "shortid";
+import { FaHome } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Context } from "../../Store/MainContext";
+import { CircularProgress } from '@mui/material';
 
 export const Signup = () => {
-  const { handleSignUp, signedInUser } = useContext(Context);
+  const { handleSignUp, loading } = useContext(Context);
 
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [formState, setFormState] = React.useState({
-    id: shortid.generate(),
-    fullName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
-    status: "online",
-    imageUrl: "",
-    createdAt: "today",
-    latestMessageText: "",
-    messages: [],
   });
 
   // handleSubmit function
@@ -24,7 +21,30 @@ export const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    handleSignUp(formState);
+    if (formState.password === confirmPassword) {
+      handleSignUp(formState);
+    } else {
+      toast.error("Passwords do not match!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    setFormState({
+      firstname: "",
+      lastname: "",
+      email: "",
+      password: "",
+    });
+
+    setConfirmPassword("")
+
   };
 
   // handleValueChange function
@@ -37,11 +57,31 @@ export const Signup = () => {
     });
   };
 
-  return signedInUser && signedInUser.uid ? (
+  return (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
-      <h1 className="text-center font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
-        Sign-up
-      </h1>
+
+      <div className="flex items-center">
+        {/* home button */}
+        <Link
+          as="div"
+          to="/"
+          className={`h-14 flex items-center w-1/12 justify-end hover:text-green-600 cursor-pointer hover:border-green-600`}
+          style={{ justifySelf: "start" }}
+        >
+          <FaHome className={`text-2xl text-gray-500  hover:text-indigo-800`} />
+        </Link>
+
+        <h1 className="text-center flex-grow font-medium uppercase text-xl sm:text-2xl text-gray-600 py-5 sm:py-10">
+          Sign-up
+        </h1>
+
+        <div className="w-1/12 flex justify-start">
+          {loading &&
+            <CircularProgress size={25} />
+          }
+        </div>
+      </div>
+
       <hr className="" />
 
       <form
@@ -54,20 +94,20 @@ export const Signup = () => {
             type="name"
             name="firstname"
             required
+            value={formState.firstname}
             placeholder="firstname "
             className="p-3 outline-none border-gray-300 text-gray-500 rounded w-full md:my-0 my-2 border-1 md:w-3/6"
             onChange={(e) => handleChange(e)}
-            id=""
           />
 
           <input
             type="name"
             name="lastname"
             required
+            value={formState.lastname}
             placeholder="lastname "
             className="p-3 outline-none border-gray-300 text-gray-500 rounded w-full md:my-0 my-2 border-1 md:w-3/6"
             onChange={(e) => handleChange(e)}
-            id=""
           />
         </div>
 
@@ -76,34 +116,35 @@ export const Signup = () => {
           type="email"
           name="email"
           required
+          value={formState.email}
           placeholder="email@email.com "
           className="p-3 my-2 outline-none border-gray-300 text-gray-500 rounded  border-1 mx-5 w-full md:mx-0 md:w-4/6"
           onChange={(e) => handleChange(e)}
-          id=""
         />
         {/* password input field */}
         <input
           type="password"
           name="password"
           required
-          placeholder="password "
+          value={formState.password}
+          placeholder="password"
           className="p-3 my-2 outline-none border-gray-300 text-gray-500 rounded  border-1 mx-5 w-full md:mx-0 md:w-4/6"
           onChange={(e) => handleChange(e)}
-          id=""
         />
 
         {/* confirm input field */}
         <input
           type="password"
           required
+          value={confirmPassword}
           placeholder="confirm password "
           className="p-3 my-2 outline-none border-gray-300 text-gray-500 rounded  border-1 mx-5 w-full md:mx-0 md:w-4/6"
-          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
         {/* login button */}
         <div className="submit mx-5 w-full md:mx-0 md:w-4/6  my-4 flex justify-center">
           <button
+            disabled={loading && true}
             type="submit"
             className={`uppercase w-3/4 text rounded-3xl p-3 bg-indigo-700 text-white hover:bg-indigo-800`}
           >
@@ -120,7 +161,5 @@ export const Signup = () => {
         </Link>
       </form>
     </div>
-  ) : (
-    <Redirect to="/chat" />
-  );
+  )
 };

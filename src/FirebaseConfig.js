@@ -4,8 +4,10 @@ import {
   signInWithPopup,
   getAuth,
   onAuthStateChanged,
-  signOut
+  signOut,
+  createUserWithEmailAndPassword
 } from "firebase/auth";
+import { doc, setDoc, getFirestore, Timestamp } from "firebase/firestore";
 // import { getFirestore } from "firebase/firestore";
 // // import { getAuth } from "firebase/auth";
 // import { initializeApp } from "firebase/app";
@@ -25,9 +27,13 @@ export const firebase = initializeApp(firebaseConfig);
 // const auth = getAuth;
 
 const googleAuthProvider = new GoogleAuthProvider();
+const db = getFirestore();
+const firebaseTimeStamp = Timestamp;
 // // googleProvider.setCustomParameters({ prompt: "select_account" });
 //   firebase.auth().signInWithPopup(googleProvider);
 // // export { firebase, db, auth, functions, googleProvider }
 
 // // export default app;
-export { googleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged, signOut };
+export {
+  googleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, doc, setDoc, db, firebaseTimeStamp
+};

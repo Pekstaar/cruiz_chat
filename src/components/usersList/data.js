@@ -22,7 +22,7 @@ export let conversations = [
     status: "active",
     imageUrl:
       "https://image.shutterstock.com/image-photo/beautiful-african-american-woman-smiling-260nw-402466177.jpg",
-    imageAlt: "Daryl Duckmanton",
+    imageAlt: "Daryl  ",
     name: "Daryl Duckmanton",
     createdAt: "Apr 16",
     latestMessageText: "This is a message",

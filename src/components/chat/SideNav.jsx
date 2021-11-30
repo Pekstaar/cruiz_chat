@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 // icons
 import { FaHome, FaVideo, FaList } from "react-icons/fa";
 import { MdGroup, MdSettingsSuggest } from "react-icons/md";
 import { IoLogoWechat } from "react-icons/io5";
-import Popper from "../Popper";
+import { IconButton, Tooltip } from "@mui/material";
+import { GiPowerButton } from "react-icons/gi"
+import { Context } from "../../Store/MainContext";
 
 export const SideNav = () => {
+  const { logOut } = useContext(Context)
+
   const [current, setCurrent] = useState("friendschat");
 
   const commonStyle = {
@@ -87,21 +91,15 @@ export const SideNav = () => {
             <MdSettingsSuggest className={`text-2xl`} />
           </Link>
         </div>
-        <Popper>
-          {/* profile image */}
-          <div
-            className="profileImage p-1"
-            style={{ width: "60px", height: "60px" }}
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Alberto_conversi_profile_pic.jpg"
-              alt=""
-              height="100%"
-              width="100%"
-              className="rounded-full "
-            />
-          </div>
-        </Popper>
+
+        {/* logout button */}
+        <div className="mb-5 rounded-full p-0.5 bg-green-500 ">
+          <Tooltip title="logout" placement="top">
+            <IconButton onClick={() => logOut()}>
+              <GiPowerButton className="text-gray-100" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </div>
     </div>
   );

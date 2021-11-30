@@ -1,8 +1,33 @@
-import React, { useState } from "react";
+import { Autocomplete, TextField } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { MdAddCircle, MdCancel } from "react-icons/md";
+import { Context } from "../Store/MainContext";
 
-const DialogModal = ({ setDisplay }) => {
+const DialogModal = ({ setDisplay, users }) => {
   const [newEmail, setNewEmail] = useState("");
+  const [state, setState] = useState("")
+
+  const { addFriend } = useContext(Context);
+
+  // React.useEffect(() => {
+  //   const filterEmails = () => {
+  //     let arr = [];
+  //     for (const email of users) {
+  //       // check if email is equal to my email
+  //       if (email !== currentUser.email) {
+  //         for (const friend of friends) {
+  //           if (friend.email !== email) {
+  //             setFriendsAvailable([...friendsAvailable, email])
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     console.log(arr)
+  //   }
+
+  //   filterEmails()
+  // }, [])
 
   return (
     <div
@@ -23,26 +48,43 @@ const DialogModal = ({ setDisplay }) => {
             }}
             className="text-center p-5 flex-auto justify-center"
           >
-            <input
-              type="email"
-              placeholder="newfriend@email.com"
-              className="p-2.5 outline-none rounded-2xl w-full text-sm text-gray-600"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
+            <Autocomplete
+              freeSolo
+              id="free-solo-2-demo"
+              disableClearable
+              onChange={(e, newValue) => setState(newValue)}
+              options={users.map((option) => option)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Search user by email"
+                  InputProps={{
+                    ...params.InputProps,
+                    type: 'search',
+                  }}
+
+                />
+              )}
             />
+
+
             <button
               onClick={() => setDisplay(false)}
               type="submit"
               className="mb-2 md:mb-0  outline-none font-bold shadow-sm text-sm font-medium tracking-wider text-white rounded-full hover:shadow-lg  absolute top-0 right-0"
             >
+              {/* {loading ? */}
               <MdCancel className="text-red-500 text-3xl hover:text-red-600" />
+              {/* :
+                <CircularProgress size={25} />
+              } */}
             </button>
           </form>
           {/* <!--footer--> */}
           <div className="p-3  text-center space-x-4 md:block">
             <button
               onClick={() => {
-                console.log(newEmail);
+                addFriend(state);
                 setDisplay(false);
               }}
               className="mb-2 md:mb-0 bg-gray-100 text-sm shadow-sm font-medium tracking-wider text-gray-100 rounded-full "

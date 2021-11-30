@@ -1,10 +1,22 @@
-import React, { useContext } from "react";
-import { Redirect } from "react-router";
+import { onAuthStateChanged } from "@firebase/auth";
+import React from "react";
 import { Form } from "../components/login/Form";
-import { Context } from "../Store/MainContext";
+import { getAuth } from "firebase/auth"
+import { useHistory } from "react-router";
 
 export const LoginScreen = (props) => {
-  const { signedInUser } = useContext(Context);
+  let auth = getAuth()
+  const history = useHistory()
+
+  React.useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        history.push("/chat")
+      } else {
+        return
+      }
+    });
+  }, [auth, history])
 
   // return signedInUser && signedInUser.uid ? (
   return (

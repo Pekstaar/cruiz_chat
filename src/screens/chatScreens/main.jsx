@@ -9,10 +9,18 @@ export const ChatScreen = () => {
   //   listContainer:
   //     "list_container bg-blue-dark w-full sm:w-4/6 md:w-2/4 lg:w-1/2 xl:w-4/12 h-5/6 px-0 rounded-lg overflow-y-scroll	relative",
   // };
+
+  // const { currentUser } = useContext(Context)
+
+  // React.useEffect(() => {
+
+
+  // }, [currentUser])
+
   return (
     <main
-      className="bg-white container mx-auto my-4  flex "
-      style={{ minHeight: "96vh" }}
+      className="bg-white container mx-auto my-4 flex"
+      style={{ height: "96vh", minHeight: "730px" }}
     >
       {/* side Icons Nav */}
       <SideNav />
