@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { Context } from "../../Store/MainContext";
+import React from "react";
 import { BsFolderFill } from "react-icons/bs";
 import { HiDotsVertical, HiOutlineLink } from "react-icons/hi";
 import { BiChevronDown } from "react-icons/bi";
@@ -8,8 +7,6 @@ import { IoMdPhotos, IoMdContact } from "react-icons/io";
 import { ImMusic } from "react-icons/im";
 
 export const Media = () => {
-  const { currentChat } = useContext(Context);
-
   return (
     <div className="media w-80 flex-shrink-0 border-gray-200 border-l-2 ">
       {/* header */}
@@ -20,7 +17,7 @@ export const Media = () => {
 
       {/* details card */}
       {/* card rounded image */}
-      <Card currentChat={currentChat} />
+      <Card />
 
       {/* files */}
       {/* file icons */}
@@ -117,7 +114,7 @@ const Card = ({ currentChat }) => (
       {/* status dot */}
       <div
         className={
-          currentChat.status === "active"
+          currentChat && currentChat.status === "active"
             ? "dot rounded-full bg-green-500 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0"
             : `dot rounded-full bg-gray-400 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0`
         }

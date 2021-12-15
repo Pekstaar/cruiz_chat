@@ -1,5 +1,5 @@
 import React from "react";
-import { Chats, Users } from "../../components/chat";
+import { Chats, Media, Users } from "../../components/chat";
 
 export const FriendsChat = () => {
   return (
@@ -8,6 +8,8 @@ export const FriendsChat = () => {
       <Users />
       {/* chat panel */}
       <Chats />
+      {/* Resource media with group or friend */}
+      <Media />
     </div>
   );
 };

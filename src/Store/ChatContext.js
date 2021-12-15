@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { conversations } from "../components/usersList/data";
+// import { conversations } from "../components/usersList/data";
 import { Context } from "./MainContext";
 import {
   googleAuthProvider,
@@ -39,10 +39,13 @@ export const ChatContext = (props) => {
 
   const [currentUser, setCurrentUser] = useState("");
   const [loading, setLoading] = useState(false);
-  const [currentChat, setCurrentChat] = useState(conversations[0]);
-  const [userOnFocus, setUserOnFocus] = useState(conversations[0].id);
+  const [userOnFocus, setUserOnFocus] = useState();
   const [friends, setFriends] = useState([]);
   const [users, setUsers] = useState([]);
+  const [allChats, setAllChats] = useState([]);
+  const [currentChat, setCurrentChat] = useState({
+    messages: [],
+  });
 
   // logout end
 
@@ -135,33 +138,58 @@ export const ChatContext = (props) => {
   // \chatting friends end
 
   // logout function
-  const logOut = () =>
-    signOut(auth).then(() => {
-      showToast("Logout Success!");
-      history.push("/");
-    });
+  const logOut = async () => {
+    try {
+      updateDoc(doc(db, "users", currentUser.id), {
+        status: "offline",
+      }).then(() =>
+        signOut(auth).then(() => {
+          showToast("Logout Success!");
+          history.push("/");
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // fetch all users
   const fetchAllUsers = async () => {
     const data = await getDocs(collection(db, "users"));
     let list = [];
-    let filteredList = friends;
+    let friendsList = [];
+
+    friends.forEach((f) => {
+      friendsList.push(f.email);
+    });
 
     data.forEach((d) => {
       const user = d.data();
-      if (user.email !== currentUser.email) {
-        list.push(d.data().email);
+      if (user.email && user.email !== currentUser.email) {
+        if (!friendsList.includes(user.email)) {
+          list.push(user.email);
+        }
       }
     });
-
-    filteredList.forEach((f) => {
-      filteredList = list.filter((e) => e !== f.email);
-    });
-    console.log(filteredList);
+    // console.log(friendsList);
     setUsers(list);
     // console.log(list);
   };
   // end of fetch all users function
+
+  // fetch chats
+  const fetchChats = async () => {
+    const querySnapshot = await getDocs(collection(db, "chats"));
+    let list = [];
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // setAllChats([...allChats, { id: doc.id, ...doc.data() }]);
+      list.push({ id: doc.id, ...doc.data() });
+    });
+
+    setAllChats(list);
+  };
+  // end of fetch chats
 
   // add Friend function
   const addFriend = async (email) => {
@@ -211,11 +239,21 @@ export const ChatContext = (props) => {
     // }
   };
 
+  // React.useEffect(() => {
+  //   allChats.length !== 0 && setCurrentChat(allChats[0]);
+  // }, [allChats]);
+
+  // set chats useEffect
+  React.useEffect(() => {
+    currentUser && fetchChats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
   React.useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         onSnapshot(doc(db, "users", user.uid), (d) => {
-          setCurrentUser({ id: user.uid, ...d.data(), status: "online" });
+          setCurrentUser({ id: user.uid, ...d.data() });
           // console.log(d.data().friends)
 
           // setFriends(doc.data().friends)
@@ -227,11 +265,33 @@ export const ChatContext = (props) => {
         setCurrentUser(null);
       }
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
 
   React.useEffect(() => {
-    fetchAllUsers();
+    const getCurrentUserFriends = async () => {
+      if (friends.length !== 0) {
+        fetchAllUsers();
+        setUserOnFocus(friends[0].id);
+      } else {
+        const data = await getDocs(collection(db, "users"));
+        let list = [];
+
+        data.forEach((d) => {
+          const user = d.data();
+
+          if (user.email && user.email !== currentUser.email) {
+            list.push(user.email);
+          }
+        });
+
+        setUsers(list);
+      }
+    };
+
+    getCurrentUserFriends();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends]);
 
@@ -246,7 +306,7 @@ export const ChatContext = (props) => {
         arr.push({ id: docSnap.id, ...docSnap.data() });
       }
 
-      setFriends(arr);
+      currentUser.friends && setFriends(arr);
     };
 
     currentUser && currentUser.friends && getFriends();
@@ -257,6 +317,7 @@ export const ChatContext = (props) => {
     <Context.Provider
       value={{
         // conversations: friends,
+        setCurrentChat,
         currentChat,
         userOnFocus,
         setUserOnFocus,
@@ -274,6 +335,9 @@ export const ChatContext = (props) => {
         allUsers: users,
         addFriend,
         friends,
+        setFriends: setFriends,
+        chats: allChats,
+        fetchChats,
       }}
     >
       {children}

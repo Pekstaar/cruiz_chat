@@ -5,7 +5,7 @@ import { Context } from "../Store/MainContext";
 
 const DialogModal = ({ setDisplay, users }) => {
   const [newEmail, setNewEmail] = useState("");
-  const [state, setState] = useState("")
+  const [state, setState] = useState("");
 
   const { addFriend } = useContext(Context);
 
@@ -45,6 +45,7 @@ const DialogModal = ({ setDisplay, users }) => {
               e.preventDefault();
               console.log(newEmail);
               setNewEmail(" ");
+              setState(" ");
             }}
             className="text-center p-5 flex-auto justify-center"
           >
@@ -60,18 +61,16 @@ const DialogModal = ({ setDisplay, users }) => {
                   label="Search user by email"
                   InputProps={{
                     ...params.InputProps,
-                    type: 'search',
+                    type: "search",
                   }}
-
                 />
               )}
             />
 
-
             <button
               onClick={() => setDisplay(false)}
               type="submit"
-              className="mb-2 md:mb-0  outline-none font-bold shadow-sm text-sm font-medium tracking-wider text-white rounded-full hover:shadow-lg  absolute top-0 right-0"
+              className="mb-2 md:mb-0  outline-none  shadow-sm text-sm font-medium tracking-wider text-white rounded-full hover:shadow-lg  absolute top-0 right-0"
             >
               {/* {loading ? */}
               <MdCancel className="text-red-500 text-3xl hover:text-red-600" />

@@ -5,11 +5,11 @@ import { FaHome, FaVideo, FaList } from "react-icons/fa";
 import { MdGroup, MdSettingsSuggest } from "react-icons/md";
 import { IoLogoWechat } from "react-icons/io5";
 import { IconButton, Tooltip } from "@mui/material";
-import { GiPowerButton } from "react-icons/gi"
+import { GiPowerButton } from "react-icons/gi";
 import { Context } from "../../Store/MainContext";
 
 export const SideNav = () => {
-  const { logOut } = useContext(Context)
+  const { logOut } = useContext(Context);
 
   const [current, setCurrent] = useState("friendschat");
 
@@ -83,7 +83,7 @@ export const SideNav = () => {
 
           {/* configurations */}
           <Link
-            to="/chat/"
+            to="/chat/settings"
             as="span"
             className={` ${handleSpan("configs")}`}
             onClick={() => setCurrent("configs")}

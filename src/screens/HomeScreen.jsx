@@ -11,7 +11,7 @@ export const HomeScreen = () => {
   const btn = (
     <button
       onClick={() => window.scroll({ top: 0, behavior: "smooth" })}
-      className="rounded-full absolute sticky bottom-12 outline-none bg-green-500 z-50 hover:bg-green-600 text-white p-2"
+      className="rounded-full absolute bottom-12 outline-none bg-green-500 z-50 hover:bg-green-600 text-white p-2"
       style={{
         right: "20px",
         float: "right",

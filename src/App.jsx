@@ -11,7 +11,7 @@ import {
 import { ChatContext } from "./Store";
 import { ToastContainer } from "react-toastify";
 import { onAuthStateChanged } from "@firebase/auth";
-import { getAuth } from "./FirebaseConfig"
+import { getAuth } from "./FirebaseConfig";
 
 const App = () => {
   return (
@@ -26,8 +26,7 @@ const App = () => {
           <Route path="/signup" component={SignupScreen} />
         </ChatContext>
       </Switch>
-      <ToastContainer
-        theme="dark" />
+      <ToastContainer theme="dark" />
     </BrowserRouter>
   );
 };
@@ -35,39 +34,38 @@ const App = () => {
 export default App;
 
 export const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
-  const auth = getAuth()
+  const auth = getAuth();
   // const history = useHistory();
 
   // const [currentUser, setCurrentUser] = useState(auth)
-  const [signedInUser, setSignedInUser] = useState({ signedIn: false, user: null })
-
+  const [signedInUser, setSignedInUser] = useState({
+    signedIn: false,
+    user: null,
+  });
 
   React.useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setSignedInUser({ signedIn: true, user: user })
+        setSignedInUser({ signedIn: true, user: user });
       } else {
-        setSignedInUser({ signedIn: false, user: null })
+        setSignedInUser({ signedIn: false, user: null });
       }
     });
-  }, [auth])
-
-  // React.useEffect(() => {
-  //   console.log(signedInUser)
-  //   // signedInUser.signedIn === false && history.push("/signin")
-  // }, [history, signedInUser])
+  }, [auth]);
 
   return (
     <Route
       {...rest}
-      render={(routeProps) =>
-        signedInUser.signedIn ?
-          < RouteComponent />
-          : <Redirect to={"/signin"} />
+      render={
+        (routeProps) =>
+          signedInUser.signedIn ? (
+            <RouteComponent />
+          ) : (
+            <Redirect to={"/signin"} />
+          )
 
         // signedInUser && signedInUser.uid ? (
         //   <Redirect to={"/signin"} />
-
       }
     />
   );

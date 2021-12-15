@@ -6,10 +6,12 @@ import { AiOutlinePaperClip } from "react-icons/ai";
 import { IoIosSend } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import EmojiPicker from "../EmojiPicker";
-import { getAuth, onAuthStateChanged } from "@firebase/auth";
+import { MdOutlineKeyboardHide } from "react-icons/md";
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
+import { db } from "../../FirebaseConfig";
 
 export const Chats = () => {
-  const { currentChat, signedInUser } = useContext(Context);
+  const { currentChat, currentUser } = useContext(Context);
 
   const messageRef = useRef();
   const [messages, setMessages] = useState(currentChat.messages);
@@ -19,7 +21,7 @@ export const Chats = () => {
 
   // function to handle emojis.
   const handleEmojis = () => {
-    messageRef.current.focus();
+    // messageRef.current.focus();
     setShowEmojis(!showEmojis);
   };
 
@@ -32,111 +34,135 @@ export const Chats = () => {
   };
 
   useEffect(() => {
-    messageRef.current.focus();
+    // messageRef.current.focus();
     setMessages(currentChat.messages);
-
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        console.log(user);
-      }
-    });
-  }, [currentChat, signedInUser]);
+  }, [currentChat, currentUser]);
 
   return (
-    <div className="flex flex-col w-full relative">
-      <ReactScrollableFeed
-        onClick={() => setShowEmojis(false)}
-        className="chats flex-grow bg-indigo-50 overflow-y-scroll mx-6 my-3 flex flex-col relative"
-      >
-        {/* Chat friends */}
-        {messages.map((mes, id) =>
-          mes.isMyMessage === true ? (
-            <MyMessage message={mes} key={id} />
-          ) : (
-            <FriendMessage message={mes} key={id} />
-          )
-        )}
-      </ReactScrollableFeed>
+    <>
+      {currentChat === "empty" ? (
+        <div className="flex h-full w-full justify-center items-center">
+          <span>Chat Empty</span>
+        </div>
+      ) : (
+        <div className="flex flex-col w-full relative">
+          <ReactScrollableFeed
+            onClick={() => setShowEmojis(false)}
+            className="chats flex-grow bg-indigo-50 overflow-y-scroll mx-1 my-3 flex flex-col relative"
+          >
+            {/* Chat friends */}
+            {messages && messages.length === 0 ? (
+              <div className=" h-full w-full flex flex-col justify-center items-center">
+                <MdOutlineKeyboardHide className="text-4xl text-gray-400" />
+                <p className="font-bold text-center text-xl text-gray-400">
+                  Type a message
+                  <br /> to start chat
+                </p>
+              </div>
+            ) : (
+              messages &&
+              messages.map((mes, id) =>
+                mes.sender && mes.sender === currentUser.id ? (
+                  <MyMessage message={mes} key={id} />
+                ) : (
+                  <FriendMessage message={mes} key={id} />
+                )
+              )
+            )}
+          </ReactScrollableFeed>
 
-      {/* display attachments */}
-      {/* <div className="attachments flex flex-wrap bg-white absolute right-20 bottom-16 z-50">
+          {/* display attachments */}
+          {/* <div className="attachments flex flex-wrap bg-white absolute right-20 bottom-16 z-50">
         <IoDocumentsSharp />
       </div> */}
 
-      {/* emojis div */}
-      <div
-        className={`${!showEmojis && "hidden"} z-40 absolute bottom-20 left-7`}
-      >
-        {/* <EmojiPicker onEmojiClick={""} /> */}
-        <EmojiPicker onChange={handleEmojiChange} />
+          {/* emojis div */}
+          <div
+            className={`${
+              !showEmojis && "hidden"
+            } z-40 absolute bottom-20 left-7`}
+          >
+            {/* <EmojiPicker onEmojiClick={""} /> */}
+            <EmojiPicker onChange={handleEmojiChange} />
 
-        <span
-          className=" absolute z-50 text-red-600 cursor-pointer p-1 bg-white rounded-full"
-          style={{ top: "-15px", left: "-10px" }}
-          onClick={() => setShowEmojis(!showEmojis)}
-        >
-          <MdCancel className="text-2xl " />
-        </span>
-      </div>
+            <span
+              className=" absolute z-50 text-red-600 cursor-pointer p-1 bg-white rounded-full"
+              style={{ top: "-15px", left: "-10px" }}
+              onClick={() => setShowEmojis(!showEmojis)}
+            >
+              <MdCancel className="text-2xl " />
+            </span>
+          </div>
 
-      <form
-        className=" flex p-2 absolute sticky bottom-0 m-auto mb-1 bg-indigo-100 "
-        style={{ width: "93.5%" }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          // const newMessage = messageRef.current.value;
+          <div className="w-full p-1 absolute bottom-0">
+            <form
+              className=" flex p-2  mx-auto mb-1 bg-indigo-100 "
+              onSubmit={(e) => {
+                e.preventDefault();
+                // const newMessage = messageRef.current.value;
+                const mes = {
+                  createdAt: new Date(),
+                  sender: currentUser.id,
+                  messageText: newMessage,
+                };
 
-          newMessage !== "" &&
-            setMessages([
-              ...messages,
-              {
-                createdAt: "Oct 23",
-                imageAlt: null,
-                imageUrl: null,
-                isMyMessage: true,
-                messageText: newMessage,
-              },
-            ]);
+                newMessage !== "" && setMessages([...messages, mes]);
 
-          setNewMessage("");
-          setShowEmojis(false);
-        }}
-      >
-        {/* send message */}
-        <input
-          type="text"
-          className="flex-grow p-2 text text-gray-600 outline-none border-0 rounded-tl rounded-bl"
-          placeholder="Write your message here. . ."
-          value={newMessage}
-          onChange={handleChange}
-          ref={messageRef}
-        />
+                // save chat to database
+                const chatsRef = doc(db, "chats", currentChat.id);
 
-        {/* icons */}
-        <span
-          className="h-full bg-white flex items-center cursor-pointer "
-          onClick={() => handleEmojis()}
-        >
-          <MdFaceRetouchingNatural className="text-2xl mx-1 text-gray-400 hover:text-gray-600" />
-        </span>
+                getDoc(chatsRef).then((r) => {
+                  updateDoc(chatsRef, {
+                    messages: [...r.data().messages, mes],
+                  })
+                    .then((r) => {
+                      console.log("chat updated successfully!", r);
+                    })
+                    .catch((err) => console.log(err));
+                });
+                setNewMessage("");
+                setShowEmojis(false);
+                // Set the "capital" field of the city 'DC'
+                //
 
-        {/* attachfile */}
-        <span className="h-full bg-white flex items-center cursor-pointer">
-          <AiOutlinePaperClip className="text-2xl mx-2 text-gray-400 " />
-        </span>
+                // fetchChats();
+              }}
+            >
+              {/* send message */}
+              <input
+                type="text"
+                className="flex-grow p-2 text text-gray-600 outline-none border-0 rounded-tl rounded-bl"
+                placeholder="Write your message here. . ."
+                value={newMessage}
+                onChange={handleChange}
+                ref={messageRef}
+              />
 
-        {/* send button */}
-        <button
-          type="submit"
-          className="mx-2 p-2 bg-green-300 outline-none rounded cursor-pointer hover:bg-green-200"
-        >
-          <IoIosSend className="text-3xl text-green-900" />
-        </button>
-      </form>
-    </div>
+              {/* icons */}
+              <span
+                className="h-12 bg-white flex items-center cursor-pointer "
+                onClick={() => handleEmojis()}
+              >
+                <MdFaceRetouchingNatural className="text-2xl mx-1 text-gray-400 hover:text-gray-600" />
+              </span>
+
+              {/* attachfile */}
+              <div className="h-12 bg-white flex items-center cursor-pointer">
+                <AiOutlinePaperClip className="text-2xl mx-2 text-gray-400 " />
+              </div>
+
+              {/* send button */}
+              <button
+                type="submit"
+                className="mx-2 p-2 bg-green-300 outline-none rounded cursor-pointer hover:bg-green-200"
+              >
+                <IoIosSend className="text-3xl text-green-900" />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -150,21 +176,21 @@ const FriendMessage = ({ message }) => (
     </div>
     <br />
     <span className="text-gray-500" style={{ fontSize: "13px" }}>
-      {message.createdAt}
+      {/* {message.createdAt} */}
     </span>
   </div>
 );
 const MyMessage = ({ message }) => (
-  <div className="block m-1 px-3 flex flex-row-reverse">
+  <div className=" m-1 px-3 flex flex-row-reverse">
     <div className="flex flex-col" style={{ maxWidth: "70%" }}>
       <div
         style={{ backgroundColor: "#08112Dc0" }}
-        className=" inline-block p-2 rounded-t-2xl text-gray-100 px-4 rounded-bl-2xl flex"
+        className="  p-2 rounded-t-2xl text-gray-100 px-4 rounded-bl-2xl flex"
       >
         {message.messageText}
       </div>
       <span className="text-sm text-gray-500 " style={{ fontSize: "13px" }}>
-        {message.createdAt}
+        {/* {message.createdAt} */}
       </span>
     </div>
   </div>
