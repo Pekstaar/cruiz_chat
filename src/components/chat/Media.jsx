@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BsFolderFill } from "react-icons/bs";
 import { HiDotsVertical, HiOutlineLink } from "react-icons/hi";
 import { BiChevronDown } from "react-icons/bi";
 import { IoDocumentSharp, IoDocumentsSharp } from "react-icons/io5";
 import { IoMdPhotos, IoMdContact } from "react-icons/io";
 import { ImMusic } from "react-icons/im";
+import { Context } from "../../Store/MainContext";
 
 export const Media = () => {
+  const { userOnView } = useContext(Context);
   return (
     <div className="media w-80 flex-shrink-0 border-gray-200 border-l-2 ">
       {/* header */}
@@ -17,7 +19,7 @@ export const Media = () => {
 
       {/* details card */}
       {/* card rounded image */}
-      <Card />
+      <Card currentChat={userOnView} />
 
       {/* files */}
       {/* file icons */}
@@ -121,9 +123,13 @@ const Card = ({ currentChat }) => (
       ></div>
     </div>
 
+    {/* email */}
+    <span className="font-light text-sm text-center">
+      {currentChat && currentChat.email}
+    </span>
     {/* description */}
     <span className="font-light text-sm text-center">
-      Lorem, ipsum dolor sit amet consectetur.
+      {currentChat && currentChat.about}
     </span>
   </div>
 );

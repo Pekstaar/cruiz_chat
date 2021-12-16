@@ -18,7 +18,7 @@ import {
   query,
   where,
   updateDoc,
-  getDoc,
+  // getDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -46,6 +46,7 @@ export const ChatContext = (props) => {
   const [currentChat, setCurrentChat] = useState({
     messages: [],
   });
+  const [userOnView, setUserOnView] = useState({});
 
   // logout end
 
@@ -80,7 +81,23 @@ export const ChatContext = (props) => {
     signInWithPopup(auth, googleAuthProvider)
       .then((res) => {
         showToast("Login Success!");
-        history.push("/chat");
+        const userRef = collection(db, "users");
+
+        // Create a query against the collection.
+        const q = query(userRef, where("email", "==", res.email));
+        if (q.exists()) {
+          history.push("/chat");
+        } else {
+          setDoc(doc(db, "users", res.uid), {
+            // fullName: `${firstname} ${lastname}`,
+            email: res.email,
+            status: "online",
+            imageUrl: "",
+            friends: [],
+            createdAt: firebaseTimeStamp.fromDate(new Date()),
+          });
+          history.push("/chat");
+        }
       })
       .catch((e) => console.error(e.message));
   // signIn with google end
@@ -301,9 +318,10 @@ export const ChatContext = (props) => {
 
       for (const f of currentUser.friends) {
         const docRef = doc(db, "users", f);
-        const docSnap = await getDoc(docRef);
 
-        arr.push({ id: docSnap.id, ...docSnap.data() });
+        onSnapshot(docRef, (doc) => {
+          arr.push({ id: doc.id, ...doc.data() });
+        });
       }
 
       currentUser.friends && setFriends(arr);
@@ -338,6 +356,8 @@ export const ChatContext = (props) => {
         setFriends: setFriends,
         chats: allChats,
         fetchChats,
+        userOnView,
+        setUserOnView,
       }}
     >
       {children}

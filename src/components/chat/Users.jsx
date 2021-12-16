@@ -25,6 +25,7 @@ export const Users = () => {
     fetchChats,
     setCurrentChat,
     currentChat,
+    setUserOnView,
   } = useContext(Context);
 
   const [displayModal, setDisplayModal] = useState(false);
@@ -94,6 +95,7 @@ export const Users = () => {
   };
 
   const startChat = (user) => {
+    setUserOnView(user);
     // check if chat exists
     // if exists
     let chatExists;
@@ -278,7 +280,7 @@ export const Users = () => {
                     {user && user.fullName.substring(0, 1)}
                   </span>
                 )}
-                {user.status === "active" ? (
+                {user.status === "online" ? (
                   <div className="absolute bottom-0 right-0 h-2 w-2 p-1.5  bg-green-500 border-white border-2 rounded-full" />
                 ) : (
                   <div className="absolute bottom-0 right-0 h-2 w-2 p-1.5  bg-gray-400 border-white border-2 rounded-full" />

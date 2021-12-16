@@ -40,7 +40,7 @@ export const Navigation = () => {
             </svg>
           </i>
           <span className="slab text-base text-gray-700 uppercase">
-            Cruizchat
+            LanChat
           </span>
         </div>
         {/* navlist */}
@@ -99,10 +99,7 @@ export const Navigation = () => {
             >
               Sign-in
             </Link>
-            <Link
-              to="/signup"
-              as="button"
-              className={styles.buttonSignUp}>
+            <Link to="/signup" as="button" className={styles.buttonSignUp}>
               Sign-up
             </Link>
           </div>

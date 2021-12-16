@@ -7,8 +7,9 @@ import { IoIosSend } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import EmojiPicker from "../EmojiPicker";
 import { MdOutlineKeyboardHide } from "react-icons/md";
-import { doc, getDoc, updateDoc } from "@firebase/firestore";
+import { doc, getDoc, updateDoc, Timestamp } from "@firebase/firestore";
 import { db } from "../../FirebaseConfig";
+import moment from "moment";
 
 export const Chats = () => {
   const { currentChat, currentUser } = useContext(Context);
@@ -35,6 +36,7 @@ export const Chats = () => {
 
   useEffect(() => {
     // messageRef.current.focus();
+
     setMessages(currentChat.messages);
   }, [currentChat, currentUser]);
 
@@ -62,7 +64,7 @@ export const Chats = () => {
             ) : (
               messages &&
               messages.map((mes, id) =>
-                mes.sender && mes.sender === currentUser.id ? (
+                currentUser && mes.sender && mes.sender === currentUser.id ? (
                   <MyMessage message={mes} key={id} />
                 ) : (
                   <FriendMessage message={mes} key={id} />
@@ -101,7 +103,7 @@ export const Chats = () => {
                 e.preventDefault();
                 // const newMessage = messageRef.current.value;
                 const mes = {
-                  createdAt: new Date(),
+                  createdAt: Timestamp.fromDate(new Date()),
                   sender: currentUser.id,
                   messageText: newMessage,
                 };
@@ -166,32 +168,36 @@ export const Chats = () => {
   );
 };
 
-const FriendMessage = ({ message }) => (
-  <div className="block m-1 p-3">
-    <div
-      className="bg-gray-50 inline-block p-2 rounded-t-2xl rounded-br-2xl text-sm"
-      style={{ maxWidth: "70%" }}
-    >
-      {message.messageText}
-    </div>
-    <br />
-    <span className="text-gray-500" style={{ fontSize: "13px" }}>
-      {/* {message.createdAt} */}
-    </span>
-  </div>
-);
-const MyMessage = ({ message }) => (
-  <div className=" m-1 px-3 flex flex-row-reverse">
-    <div className="flex flex-col" style={{ maxWidth: "70%" }}>
+const FriendMessage = ({ message }) => {
+  return (
+    <div className="block m-1 p-3">
       <div
-        style={{ backgroundColor: "#08112Dc0" }}
-        className="  p-2 rounded-t-2xl text-gray-100 px-4 rounded-bl-2xl flex"
+        className="bg-gray-50 inline-block p-2 rounded-t-2xl rounded-br-2xl text-sm"
+        style={{ maxWidth: "70%" }}
       >
         {message.messageText}
       </div>
-      <span className="text-sm text-gray-500 " style={{ fontSize: "13px" }}>
-        {/* {message.createdAt} */}
+      <br />
+      <span className="text-gray-500" style={{ fontSize: "13px" }}>
+        {moment(message.createdAt.toDate(), "YYYYMMDD").fromNow()}
       </span>
     </div>
-  </div>
-);
+  );
+};
+const MyMessage = ({ message }) => {
+  return (
+    <div className=" m-1 px-3 flex flex-row-reverse">
+      <div className="flex flex-col" style={{ maxWidth: "70%" }}>
+        <div
+          style={{ backgroundColor: "#08112Dc0" }}
+          className="  p-2 rounded-t-2xl text-gray-100 px-4 rounded-bl-2xl flex"
+        >
+          {message.messageText}
+        </div>
+        <span className="text-sm text-gray-500 " style={{ fontSize: "13px" }}>
+          {moment(message.createdAt.toDate(), "YYYYMMDD").fromNow()}
+        </span>
+      </div>
+    </div>
+  );
+};
