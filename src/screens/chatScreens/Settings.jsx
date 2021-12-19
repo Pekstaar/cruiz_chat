@@ -1,6 +1,6 @@
 import { Icon, Tooltip } from "@mui/material";
 import { updateEmail, updatePassword } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -12,16 +12,50 @@ import { BsChevronLeft } from "react-icons/bs";
 import { FaCamera, FaUserFriends } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
+import { SideNav } from "../../components/chat";
 import { auth, db, storage } from "../../FirebaseConfig";
 import { Context } from "../../Store/MainContext";
 
 export const Settings = () => {
   const { currentUser } = useContext(Context);
+
+  const [currentUserDetails, setCurrentUserDetails] = useState();
+
+  useEffect(() => {
+    if (currentUser) {
+      const getDetails = async () => {
+        onSnapshot(doc(db, "users", currentUser.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            setCurrentUserDetails({ ...docSnap.data(), ...currentUser });
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        });
+      };
+
+      getDetails();
+    }
+  }, [currentUser]);
+  return (
+    <main
+      className="bg-white container mx-auto my-4 flex"
+      style={{ height: "96vh", minHeight: "730px" }}
+    >
+      {/* side Icons Nav */}
+      <SideNav />
+
+      {currentUserDetails && <Panel currentUser={currentUserDetails} />}
+    </main>
+  );
+};
+
+const Panel = ({ currentUser }) => {
   const names =
     currentUser && currentUser.fullName && currentUser.fullName.split(" ");
 
   const [fullName, setFullName] = useState(
-    currentUser.fullName && currentUser.fullName
+    currentUser && currentUser.fullName && currentUser.fullName
   );
   const [about, setAbout] = useState(currentUser.about && currentUser.about);
   const [email, setEmail] = useState(currentUser.email && currentUser.email);
@@ -47,7 +81,7 @@ export const Settings = () => {
               const fullPath = r.ref.fullPath;
               const url = await getDownloadURL(ref(storage, fullPath));
 
-              await updateDoc(doc(db, "users", currentUser.id), {
+              await updateDoc(doc(db, "users", currentUser.uid), {
                 imageUrl: url,
                 imagePath: fullPath,
               });
@@ -82,7 +116,7 @@ export const Settings = () => {
       uploadImage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser.id, photo]);
+  }, [currentUser, photo]);
 
   return (
     <div className=" flex flex-grow overflow-y-scroll">
@@ -191,7 +225,7 @@ export const Settings = () => {
                       await deleteObject(ref(storage, currentUser.imagePath));
 
                       // firestore update
-                      await updateDoc(doc(db, "users", currentUser.id), {
+                      await updateDoc(doc(db, "users", currentUser.uid), {
                         imageUrl: "",
                         imagePath: "",
                       });
@@ -219,7 +253,7 @@ export const Settings = () => {
               // updateFirebaseprofile
               e.preventDefault();
 
-              const userRef = doc(db, "users", currentUser.id);
+              const userRef = doc(db, "users", currentUser.uid);
 
               // Set the "capital" field of the city 'DC'
               updateDoc(userRef, {
@@ -257,7 +291,7 @@ export const Settings = () => {
               name="name"
               className="p-3 my-2 outline-none bg-gray-50 text-gray-500 rounded w-full"
               onChange={(e) => setFullName(e.target.value)}
-              value={fullName}
+              value={fullName && fullName}
             />
 
             {/* udpate button */}
@@ -276,7 +310,7 @@ export const Settings = () => {
             onSubmit={(e) => {
               e.preventDefault();
 
-              const userRef = doc(db, "users", currentUser.id);
+              const userRef = doc(db, "users", currentUser.uid);
 
               // Set the "capital" field of the city 'DC'
               updateDoc(userRef, {
@@ -315,7 +349,7 @@ export const Settings = () => {
               placeholder="-- brief description about you --"
               className="p-3 my-2 outline-none bg-gray-50 text-gray-500 rounded w-full"
               onChange={(e) => setAbout(e.target.value)}
-              value={about}
+              value={about && about}
             />
 
             {/* udpate button */}
@@ -334,7 +368,7 @@ export const Settings = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const userRef = doc(db, "users", currentUser.id);
+              const userRef = doc(db, "users", currentUser.uid);
 
               // update authentication
               // update firestore
@@ -381,7 +415,7 @@ export const Settings = () => {
               placeholder="-- brief description about you --"
               className="p-3 my-2 outline-none bg-gray-50 text-gray-500 rounded w-full"
               onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              value={email && email}
             />
 
             {/* udpate button */}

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   BlogScreen,
   ChatScreen,
@@ -8,23 +8,24 @@ import {
   SignupScreen,
   TermsScreen,
 } from "./screens";
-import { ChatContext } from "./Store";
+import { MainContext } from "./Store";
 import { ToastContainer } from "react-toastify";
-import { onAuthStateChanged } from "@firebase/auth";
-import { getAuth } from "./FirebaseConfig";
+import PrivateRoute from "./components/PrivateRoute";
+import { Settings } from "./screens/chatScreens/Settings";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <ChatContext>
+        <MainContext>
           <Route path="/" exact component={HomeScreen} />
           <Route path="/terms" component={TermsScreen} />
-          <PrivateRoute path="/chat" component={ChatScreen} />
+          <PrivateRoute exact path="/chat" component={ChatScreen} />
+          <PrivateRoute path="/chat/settings" component={Settings} />
           <Route path="/blog" component={BlogScreen} />
           <Route path="/signin" component={LoginScreen} />
           <Route path="/signup" component={SignupScreen} />
-        </ChatContext>
+        </MainContext>
       </Switch>
       <ToastContainer theme="dark" />
     </BrowserRouter>
@@ -32,41 +33,3 @@ const App = () => {
 };
 
 export default App;
-
-export const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
-  const auth = getAuth();
-  // const history = useHistory();
-
-  // const [currentUser, setCurrentUser] = useState(auth)
-  const [signedInUser, setSignedInUser] = useState({
-    signedIn: false,
-    user: null,
-  });
-
-  React.useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setSignedInUser({ signedIn: true, user: user });
-      } else {
-        setSignedInUser({ signedIn: false, user: null });
-      }
-    });
-  }, [auth]);
-
-  return (
-    <Route
-      {...rest}
-      render={
-        (routeProps) =>
-          signedInUser.signedIn ? (
-            <RouteComponent />
-          ) : (
-            <Redirect to={"/signin"} />
-          )
-
-        // signedInUser && signedInUser.uid ? (
-        //   <Redirect to={"/signin"} />
-      }
-    />
-  );
-};

@@ -1,37 +1,81 @@
 // import {  } from "@firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import React, { useContext } from "react";
 import { FaHome } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { auth, db, googleAuthProvider } from "../../FirebaseConfig";
 import { Context } from "../../Store/MainContext";
 
-
 export const Form = () => {
-  const { signInWithGoogle, login } = useContext(Context);
+  const { currentUser } = useContext(Context);
 
   const [state, setState] = React.useState({
     email: "",
-    password: ""
-  })
+    password: "",
+  });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password } = state;
     // handle submit
-    login(state.email, state.password);
-    setState({
-      email: "",
-      password: ""
-    })
-  }
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+
+      await updateDoc(doc(db, "users", result.user.uid), {
+        status: "online",
+      });
+      setState({
+        email: "",
+        password: "",
+      });
+      history.push("/chat");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+  const history = useHistory();
+
+  const signinWithGoogle = () => {
+    signInWithPopup(auth, googleAuthProvider)
+      .then(async ({ user }) => {
+        const userRef = collection(db, "users");
+
+        // Create a query against the collection.
+        const q = query(userRef, where("email", "==", user.email));
+        const data = await getDocs(q);
+        console.log(data.length);
+        data.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+        });
+      })
+      .catch((e) => console.error(e.message));
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     setState({
       ...state,
-      [name]: value
-    })
-  }
+      [name]: value,
+    });
+  };
+
+  React.useEffect(() => {
+    if (currentUser) {
+      history.push("/chat");
+    }
+  }, [currentUser, history]);
 
   return (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
@@ -58,14 +102,17 @@ export const Form = () => {
         <button
           className="uppercase p-3 bg-indigo-800 hover:bg-indigo-700 text-white  mx-5 w-full md:mx-0 md:w-4/6 rounded flex gap-6 justify-center font-medium items-center"
           type="button"
-          onClick={() => signInWithGoogle()}
+          onClick={() => signinWithGoogle()}
         >
           login with Google
           <FcGoogle className="text-3xl" />
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="form pb-6 flex items-center flex-col">
+      <form
+        onSubmit={handleSubmit}
+        className="form pb-6 flex items-center flex-col"
+      >
         {/* or text seperator */}
         <span className="text-center text-gray-500 my-3 ">or</span>
 

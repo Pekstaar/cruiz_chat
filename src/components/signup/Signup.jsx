@@ -1,12 +1,16 @@
 import React, { useContext } from "react";
 import { FaHome } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Context } from "../../Store/MainContext";
-import { CircularProgress } from '@mui/material';
+import { CircularProgress } from "@mui/material";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../FirebaseConfig";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 
 export const Signup = () => {
-  const { handleSignUp, loading } = useContext(Context);
+  const { loading } = useContext(Context);
+  const history = useHistory();
 
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [formState, setFormState] = React.useState({
@@ -18,11 +22,23 @@ export const Signup = () => {
 
   // handleSubmit function
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password, firstname, lastname } = formState;
 
     if (formState.password === confirmPassword) {
-      handleSignUp(formState);
+      createUserWithEmailAndPassword(auth, email, password).then((r) => {
+        setDoc(doc(db, "users", r.user.uid), {
+          uid: r.user.uid,
+          fullName: `${firstname} ${lastname}`,
+          email,
+          createdAt: Timestamp.fromDate(new Date()),
+          status: "online",
+        }).then(() => {
+          toast.success("user registered successfully!");
+          history.push("/");
+        });
+      });
     } else {
       toast.error("Passwords do not match!", {
         position: "top-right",
@@ -43,8 +59,7 @@ export const Signup = () => {
       password: "",
     });
 
-    setConfirmPassword("")
-
+    setConfirmPassword("");
   };
 
   // handleValueChange function
@@ -59,7 +74,6 @@ export const Signup = () => {
 
   return (
     <div className="lg:w-7/12 sm:w-3/4 w-full bg-white mt-20 py-4 px-2 sm:px-4">
-
       <div className="flex items-center">
         {/* home button */}
         <Link
@@ -76,9 +90,7 @@ export const Signup = () => {
         </h1>
 
         <div className="w-1/12 flex justify-start">
-          {loading &&
-            <CircularProgress size={25} />
-          }
+          {loading && <CircularProgress size={25} />}
         </div>
       </div>
 
@@ -161,5 +173,5 @@ export const Signup = () => {
         </Link>
       </form>
     </div>
-  )
+  );
 };

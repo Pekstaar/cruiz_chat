@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
 // icons
 import { FaHome, FaVideo, FaList } from "react-icons/fa";
 import { MdGroup, MdSettingsSuggest } from "react-icons/md";
@@ -7,11 +7,18 @@ import { IoLogoWechat } from "react-icons/io5";
 import { IconButton, Tooltip } from "@mui/material";
 import { GiPowerButton } from "react-icons/gi";
 import { Context } from "../../Store/MainContext";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../../FirebaseConfig";
+import { signOut } from "firebase/auth";
+import { toast } from "react-toastify";
 
 export const SideNav = () => {
-  const { logOut } = useContext(Context);
-
-  const [current, setCurrent] = useState("friendschat");
+  const {
+    currentNav: current,
+    setCurrentNav: setCurrent,
+    currentUser,
+  } = useContext(Context);
+  const history = useHistory();
 
   const commonStyle = {
     gray500: "text-gray-400",
@@ -24,6 +31,21 @@ export const SideNav = () => {
       return "bg-green-100 text-green-800 rounded-xl p-3.5 cursor-pointer";
     } else
       return "hover:bg-green-100 hover:text-green-800 rounded-xl p-3.5 cursor-pointer";
+  };
+
+  const logoutUser = () => {
+    try {
+      updateDoc(doc(db, "users", currentUser.uid), {
+        status: "offline",
+      }).then(() =>
+        signOut(auth).then(() => {
+          toast.success("Logout success!");
+          history.push("/");
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -95,7 +117,7 @@ export const SideNav = () => {
         {/* logout button */}
         <div className="mb-5 rounded-full p-0.5 bg-green-500 ">
           <Tooltip title="logout" placement="top">
-            <IconButton onClick={() => logOut()}>
+            <IconButton onClick={() => logoutUser()}>
               <GiPowerButton className="text-gray-100" />
             </IconButton>
           </Tooltip>

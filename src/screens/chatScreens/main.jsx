@@ -1,8 +1,6 @@
 import React from "react";
-import { Route, Switch } from "react-router";
 import { SideNav } from "../../components/chat";
 import { FriendsChat } from "./FriendsChat";
-import { Settings } from "./Settings";
 // import {Chat}
 
 export const ChatScreen = () => {
@@ -14,15 +12,8 @@ export const ChatScreen = () => {
       {/* side Icons Nav */}
       <SideNav />
 
-      <Switch>
-        <Route exact path="/chat/">
-          {/* chats */}
-          <FriendsChat />
-        </Route>
-        <Route exact path="/chat/settings">
-          <Settings />
-        </Route>
-      </Switch>
+      {/* chats */}
+      <FriendsChat />
     </main>
   );
 };

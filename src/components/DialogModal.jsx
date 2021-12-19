@@ -1,33 +1,15 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import React, { useContext, useState } from "react";
 import { MdAddCircle, MdCancel } from "react-icons/md";
-import { Context } from "../Store/MainContext";
+import { toast } from "react-toastify";
+import { db } from "../FirebaseConfig";
+import { Context } from "../Store";
 
 const DialogModal = ({ setDisplay, users }) => {
-  const [newEmail, setNewEmail] = useState("");
+  const { currentUser } = useContext(Context);
+
   const [state, setState] = useState("");
-
-  const { addFriend } = useContext(Context);
-
-  // React.useEffect(() => {
-  //   const filterEmails = () => {
-  //     let arr = [];
-  //     for (const email of users) {
-  //       // check if email is equal to my email
-  //       if (email !== currentUser.email) {
-  //         for (const friend of friends) {
-  //           if (friend.email !== email) {
-  //             setFriendsAvailable([...friendsAvailable, email])
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     console.log(arr)
-  //   }
-
-  //   filterEmails()
-  // }, [])
 
   return (
     <div
@@ -43,29 +25,29 @@ const DialogModal = ({ setDisplay, users }) => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              console.log(newEmail);
-              setNewEmail(" ");
               setState(" ");
             }}
             className="text-center p-5 flex-auto justify-center"
           >
-            <Autocomplete
-              freeSolo
-              id="free-solo-2-demo"
-              disableClearable
-              onChange={(e, newValue) => setState(newValue)}
-              options={users.map((option) => option)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Search user by email"
-                  InputProps={{
-                    ...params.InputProps,
-                    type: "search",
-                  }}
-                />
-              )}
-            />
+            <FormControl fullWidth className="text-left">
+              <InputLabel id="demo-simple-select-label">
+                Select Friend
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={state}
+                label="Select friend"
+                onChange={(e) => setState(e.target.value)}
+              >
+                {users &&
+                  users.map((u) => (
+                    <MenuItem key={u.uid} value={u.uid}>
+                      {u.email}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
 
             <button
               onClick={() => setDisplay(false)}
@@ -82,8 +64,24 @@ const DialogModal = ({ setDisplay, users }) => {
           {/* <!--footer--> */}
           <div className="p-3  text-center space-x-4 md:block">
             <button
-              onClick={() => {
-                addFriend(state);
+              onClick={async () => {
+                // addFriend(state);c
+                const friendRef = doc(db, "users", state);
+                const userRef = doc(db, "users", currentUser.uid);
+
+                // Set the "capital" field of the city 'DC'
+                try {
+                  await updateDoc(friendRef, {
+                    friends: arrayUnion(currentUser.uid),
+                  });
+
+                  await updateDoc(userRef, {
+                    friends: arrayUnion(state),
+                  });
+
+                  toast.success("User added successfully!");
+                } catch (error) {}
+                setState("");
                 setDisplay(false);
               }}
               className="mb-2 md:mb-0 bg-gray-100 text-sm shadow-sm font-medium tracking-wider text-gray-100 rounded-full "

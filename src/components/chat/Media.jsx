@@ -1,14 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BsFolderFill } from "react-icons/bs";
 import { HiDotsVertical, HiOutlineLink } from "react-icons/hi";
 import { BiChevronDown } from "react-icons/bi";
 import { IoDocumentSharp, IoDocumentsSharp } from "react-icons/io5";
 import { IoMdPhotos, IoMdContact } from "react-icons/io";
 import { ImMusic } from "react-icons/im";
-import { Context } from "../../Store/MainContext";
 
-export const Media = () => {
-  const { userOnView } = useContext(Context);
+export const Media = ({ userOnFocus }) => {
   return (
     <div className="media w-80 flex-shrink-0 border-gray-200 border-l-2 ">
       {/* header */}
@@ -19,7 +17,7 @@ export const Media = () => {
 
       {/* details card */}
       {/* card rounded image */}
-      <Card currentChat={userOnView} />
+      {userOnFocus && <Card currentChat={userOnFocus} />}
 
       {/* files */}
       {/* file icons */}
@@ -116,7 +114,7 @@ const Card = ({ currentChat }) => (
       {/* status dot */}
       <div
         className={
-          currentChat && currentChat.status === "active"
+          currentChat && currentChat.status === "online"
             ? "dot rounded-full bg-green-500 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0"
             : `dot rounded-full bg-gray-400 w-4 h-4 border-gray-100 border-4 p-1.5 absolute bottom-0 right-0`
         }

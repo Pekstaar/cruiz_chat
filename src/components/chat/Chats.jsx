@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Context } from "../../Store/MainContext";
+import React, { useEffect, useRef, useState } from "react";
 import ReactScrollableFeed from "react-scrollable-feed";
 import { MdFaceRetouchingNatural } from "react-icons/md";
 import { AiOutlinePaperClip } from "react-icons/ai";
@@ -7,17 +6,29 @@ import { IoIosSend } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import EmojiPicker from "../EmojiPicker";
 import { MdOutlineKeyboardHide } from "react-icons/md";
-import { doc, getDoc, updateDoc, Timestamp } from "@firebase/firestore";
+import {
+  doc,
+  arrayUnion,
+  setDoc,
+  Timestamp,
+  onSnapshot,
+} from "@firebase/firestore";
 import { db } from "../../FirebaseConfig";
 import moment from "moment";
+import { toast } from "react-toastify";
+import { CircularProgress } from "@mui/material";
 
-export const Chats = () => {
-  const { currentChat, currentUser } = useContext(Context);
+export const Chats = (props) => {
+  const { currentUser, userOnFocus } = props;
 
   const messageRef = useRef();
-  const [messages, setMessages] = useState(currentChat.messages);
+  const [messages, setMessages] = useState([]);
   const [showEmojis, setShowEmojis] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+  const [chats, setChats] = useState({ messages: [] });
+
+  const [loading, setLoading] = useState(true);
+
   // const [displayAttach, setDisplayAttach] = useState("");
 
   // function to handle emojis.
@@ -37,41 +48,76 @@ export const Chats = () => {
   useEffect(() => {
     // messageRef.current.focus();
 
-    setMessages(currentChat.messages);
-  }, [currentChat, currentUser]);
+    setMessages(chats.messages);
+  }, [chats, currentUser]);
+
+  useEffect(() => {
+    setLoading(true);
+    const user1 = currentUser && currentUser.uid;
+    const user2 = userOnFocus.uid && userOnFocus.uid;
+
+    if (user2) {
+      const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
+
+      // execute query
+      const unsub = onSnapshot(doc(db, "chats", id), (querySnapshot) => {
+        if (querySnapshot.data()) {
+          setChats({ id: querySnapshot.id, ...querySnapshot.data() });
+          setLoading(false);
+        } else {
+          setChats({ messages: [] });
+          setLoading(false);
+        }
+      });
+      return () => unsub();
+    }
+    setLoading(false);
+  }, [currentUser, userOnFocus]);
 
   return (
     <>
-      {currentChat === "empty" ? (
+      {chats === "empty" ? (
         <div className="flex h-full w-full justify-center items-center">
           <span>Chat Empty</span>
         </div>
       ) : (
         <div className="flex flex-col w-full relative">
-          <ReactScrollableFeed
-            onClick={() => setShowEmojis(false)}
-            className="chats flex-grow bg-indigo-50 overflow-y-scroll mx-1 my-3 flex flex-col relative"
-          >
-            {/* Chat friends */}
-            {messages && messages.length === 0 ? (
-              <div className=" h-full w-full flex flex-col justify-center items-center">
-                <MdOutlineKeyboardHide className="text-4xl text-gray-400" />
-                <p className="font-bold text-center text-xl text-gray-400">
-                  Type a message
-                  <br /> to start chat
-                </p>
-              </div>
-            ) : (
-              messages &&
-              messages.map((mes, id) =>
-                currentUser && mes.sender && mes.sender === currentUser.id ? (
-                  <MyMessage message={mes} key={id} />
-                ) : (
-                  <FriendMessage message={mes} key={id} />
+          {loading ? (
+            <div className="w-full bg-indigo-50 h-full flex-grow mx-1 my-3 flex justify-center items-center">
+              <h2 className="text-gray-400 text-center">
+                <CircularProgress color="inherit" />
+                <br />
+                <span className="font-medium">loading chats...</span>
+              </h2>
+            </div>
+          ) : (
+            <ReactScrollableFeed
+              onClick={() => setShowEmojis(false)}
+              className="chats flex-grow bg-indigo-50 overflow-y-scroll mx-1 my-3 flex flex-col relative"
+            >
+              {/* Chat friends */}
+              {messages && messages.length === 0 ? (
+                <div className=" h-full w-full flex flex-col justify-center items-center">
+                  <MdOutlineKeyboardHide className="text-4xl text-gray-400" />
+                  <p className="font-bold text-center text-xl text-gray-400">
+                    Type a message
+                    <br /> to start chat
+                  </p>
+                </div>
+              ) : (
+                messages &&
+                messages.map((mes, id) =>
+                  currentUser &&
+                  mes.sender &&
+                  mes.sender === currentUser.uid ? (
+                    <MyMessage message={mes} key={id} />
+                  ) : (
+                    <FriendMessage message={mes} key={id} />
+                  )
                 )
-              )
-            )}
-          </ReactScrollableFeed>
+              )}
+            </ReactScrollableFeed>
+          )}
 
           {/* display attachments */}
           {/* <div className="attachments flex flex-wrap bg-white absolute right-20 bottom-16 z-50">
@@ -99,29 +145,39 @@ export const Chats = () => {
           <div className="w-full p-1 absolute bottom-0">
             <form
               className=" flex p-2  mx-auto mb-1 bg-indigo-100 "
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 // const newMessage = messageRef.current.value;
+                const user1 = currentUser && currentUser.uid;
+                const user2 = userOnFocus && userOnFocus.uid;
+
+                const id =
+                  user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
+
                 const mes = {
                   createdAt: Timestamp.fromDate(new Date()),
-                  sender: currentUser.id,
+                  sender: currentUser.uid,
                   messageText: newMessage,
+                  other: "",
                 };
 
-                newMessage !== "" && setMessages([...messages, mes]);
+                try {
+                  // const existingChat = await getDoc(doc(db, "chats", id));
+                  // !existingChat.data() && console.log("Couldn't find Chat'");
 
-                // save chat to database
-                const chatsRef = doc(db, "chats", currentChat.id);
+                  await setDoc(
+                    doc(db, "chats", id),
+                    {
+                      messages: arrayUnion(mes),
+                    },
+                    { merge: true }
+                  );
 
-                getDoc(chatsRef).then((r) => {
-                  updateDoc(chatsRef, {
-                    messages: [...r.data().messages, mes],
-                  })
-                    .then((r) => {
-                      console.log("chat updated successfully!", r);
-                    })
-                    .catch((err) => console.log(err));
-                });
+                  // console.log("Message Sent!");
+                } catch (error) {
+                  toast.error(error.message);
+                }
+
                 setNewMessage("");
                 setShowEmojis(false);
                 // Set the "capital" field of the city 'DC'
@@ -170,7 +226,7 @@ export const Chats = () => {
 
 const FriendMessage = ({ message }) => {
   return (
-    <div className="block m-1 p-3">
+    <div className="block m-1 px-3">
       <div
         className="bg-gray-50 inline-block p-2 rounded-t-2xl rounded-br-2xl text-sm"
         style={{ maxWidth: "70%" }}

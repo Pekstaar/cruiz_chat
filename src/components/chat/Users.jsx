@@ -1,55 +1,71 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { MdOutlineSearch, MdOutlineAdd } from "react-icons/md";
 import { HiDotsVertical } from "react-icons/hi";
-import { Context } from "../../Store/MainContext";
 import DialogModal from "../DialogModal";
 import { ImBin } from "react-icons/im";
 import {
-  addDoc,
-  collection,
   doc,
-  getDoc,
-  onSnapshot,
   updateDoc,
+  onSnapshot,
+  where,
+  query,
+  collection,
+  arrayRemove,
 } from "@firebase/firestore";
 import { db } from "../../FirebaseConfig";
 import { toastWarning } from "../toaster";
 
-export const Users = () => {
-  const {
-    currentUser,
-    allUsers,
-    friends,
-    setFriends,
-    chats,
-    fetchChats,
-    setCurrentChat,
-    currentChat,
-    setUserOnView,
-  } = useContext(Context);
-
+export const Users = ({
+  friends: f,
+  currentUser,
+  setFriends: setF,
+  userOnFocus,
+  setUserOnFocus,
+}) => {
   const [displayModal, setDisplayModal] = useState(false);
-  const [users, setUsers] = useState(friends);
-  const [userOnFocus, setUserOnFocus] = useState(friends[0]);
+  const [users, setUsers] = useState([]);
+
+  const [friends, setFriends] = useState();
 
   const names =
     currentUser && currentUser.fullName && currentUser.fullName.split(" ");
 
+  React.useEffect(() => setFriends(f), [f]);
+
   React.useEffect(() => {
-    setUsers(friends);
-  }, [friends]);
+    if (currentUser && currentUser.email) {
+      const getUsers = async () => {
+        const q = query(
+          collection(db, "users"),
+          where("email", "!=", currentUser.email)
+        );
+
+        onSnapshot(q, (snapshot) => {
+          let users = [];
+          snapshot.forEach((doc) => {
+            if (doc.data()) {
+              users.push(doc.data());
+            }
+          });
+          setUsers([...users]);
+        });
+      };
+
+      getUsers();
+    }
+
+    // Create a query against the collection.
+  }, [currentUser, friends]);
+
+  React.useEffect(() => console.log("friends", friends), [friends]);
 
   const deleteFriend = async (u) => {
     if (!u) {
       return;
     }
 
-    const friendToDelete = users.filter((user) => user.id === u.id)[0];
-    const newList = users.filter((user) => user.id !== u.id);
-    const myFriends = [];
-    newList.forEach((f) => {
-      myFriends.push(f.id);
-    });
+    const friendToDelete = friends.filter((user) => user.id === u.id)[0];
+    const newList = friends.filter((user) => user.id !== u.id);
 
     // update firebase on new list\
     if (
@@ -58,16 +74,22 @@ export const Users = () => {
         "Are you sure you want do delete " + friendToDelete.fullName + "?"
       )
     ) {
+      setF(newList);
       try {
-        setFriends(newList);
+        // setFriends(newList);
 
-        const thisUserRef = doc(db, "users", currentUser.id);
+        const thisUserRef = doc(db, "users", currentUser.uid);
+        const friendRef = doc(db, "users", u.uid);
 
-        updateDoc(thisUserRef, {
-          friends: [...myFriends],
-        }).then(() =>
-          toastWarning(`${friendToDelete.fullName} Deleted Successfully!`)
-        );
+        await updateDoc(thisUserRef, {
+          friends: arrayRemove(u.uid),
+        });
+
+        await updateDoc(friendRef, {
+          friends: arrayRemove(currentUser.uid),
+        });
+
+        toastWarning(`${friendToDelete.fullName} Deleted Successfully!`);
       } catch (err) {
         console.error(err.message);
       }
@@ -77,7 +99,7 @@ export const Users = () => {
   const filterUsers = (searchValue, userArray) => {
     let filteredData = [];
     if (searchValue === "") {
-      setUsers(friends);
+      setFriends(f);
       return;
     }
 
@@ -91,68 +113,8 @@ export const Users = () => {
       }
     });
 
-    setUsers(filteredData);
+    setFriends(filteredData);
   };
-
-  const startChat = (user) => {
-    setUserOnView(user);
-    // check if chat exists
-    // if exists
-    let chatExists;
-
-    // check if friend exists on list
-    if (chats) {
-      if (users.includes(user)) {
-        for (let chat of chats) {
-          chatExists =
-            chat &&
-            chat.users &&
-            chat.users.includes(currentUser.id) &&
-            chat.users.includes(user.id);
-
-          const docRef = doc(db, "chats", chat.id);
-
-          if (chatExists) {
-            getDoc(docRef).then((r) => {
-              setCurrentChat({ id: r.id, ...r.data() });
-            });
-            break;
-          }
-        }
-      }
-      // console.log(chatExists);
-      !chatExists &&
-        addDoc(collection(db, "chats"), {
-          users: [currentUser.id, user.id],
-          messages: [],
-        })
-          .then((r) => {
-            console.log("new chat initialized!", r.id);
-            fetchChats();
-          })
-          .catch((err) => console.log(err));
-    }
-
-    // setCurrentChat({});
-
-    // if (state === false) setCurrentChat("empty");
-    // if not start chat(ids: currentUser, userClicked)
-    // const
-    // if exists, loadChats from
-  };
-
-  React.useEffect(() => {
-    const getLatestChats = () => {
-      currentChat &&
-        currentChat.id &&
-        onSnapshot(doc(db, "chats", currentChat.id), (doc) => {
-          setCurrentChat({ id: doc.id, ...doc.data() });
-        });
-    };
-
-    getLatestChats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="users w-80 h-full p-1 pb-1 flex-shrink-0 flex flex-col">
@@ -218,7 +180,7 @@ export const Users = () => {
           placeholder="search"
           className="w-full bg-indigo-50 text-sm p-2 px-2.5 outline-none text-gray-500 rounded-3xl"
           // value={toSearch}
-          onChange={(e) => filterUsers(e.target.value, friends)}
+          onChange={(e) => filterUsers(e.target.value, f)}
         />
 
         {/* absolute search icon */}
@@ -234,7 +196,7 @@ export const Users = () => {
         </span>
 
         <div className={`${!displayModal && "hidden"}`}>
-          <DialogModal setDisplay={setDisplayModal} users={allUsers} />
+          <DialogModal setDisplay={setDisplayModal} users={users} />
         </div>
         {/* add new button */}
         <button
@@ -253,15 +215,14 @@ export const Users = () => {
         className="userlist py-3 overflow-y-scroll flex-grow"
         // style={{ height: "390px" }}
       >
-        {users &&
-          users.map((user) => (
+        {friends &&
+          friends.map((user) => (
             <div
               className={`user m-1 p-2 hover:bg-gray-200 flex gap-2 cursor-pointer ${
-                userOnFocus && userOnFocus.id === user.id ? "bg-gray-200" : ""
+                userOnFocus && userOnFocus.uid === user.uid ? "bg-gray-200" : ""
               }`}
-              key={user.id && user.id}
+              key={user.uid}
               onClick={() => {
-                startChat(user);
                 setUserOnFocus(user);
               }}
             >
